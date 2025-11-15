@@ -1,3 +1,3 @@
-[submodule "p02-library"]
-	path = p02-library
-	url = https://github.com/machi-cu-68-1/p02-library
+[submodule ".backend"]
+	path = .backend
+	url = https://github.com/machi-cu-68-1/p01-inventory
