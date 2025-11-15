@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NextAuthProvider from "./providers/NextAuthProvider";
 import ReduxProvider from "@/tools/redux/ReduxProvider";
+import TopMenu from "@/tools/components/TopMenu";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +30,7 @@ export default function RootLayout({
       <body>
         <ReduxProvider>
           <NextAuthProvider>
+            <TopMenu />
             {children}
           </NextAuthProvider>
         </ReduxProvider>
