@@ -4,13 +4,13 @@ import "./globals.css";
 import NextAuthProvider from "@/providers/NextAuthProvider";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import SideMenu from "@/component/Sidebar/SideMenu";
+import SideMenu from "@/components/Sidebar/SideMenuu";
 import { ThemeProvider } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
 import CssBaseline from "@mui/material/CssBaseline";
-import AppNavBar from "@/component/Sidebar/AppNavBar";
+import AppNavBar from "@/components/Sidebar/AppNavBarr";
 import theme from "@/theme/theme";
 
 const inter = Inter({
