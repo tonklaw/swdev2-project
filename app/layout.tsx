@@ -4,7 +4,10 @@ import "./globals.css"
 import NextAuthProvider from "@/providers/NextAuthProvider"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import SideMenu from "@/component/SideMenu"
 import { ThemeProvider } from "@mui/material/styles"
+import Box from "@mui/material/Box"
+import Stack from "@mui/material/Stack"
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
 import CssBaseline from "@mui/material/CssBaseline"
 import theme from "@/theme/theme"
@@ -31,9 +34,30 @@ export default async function RootLayout({
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
           <CssBaseline enableColorScheme />
-        <NextAuthProvider session={session}>
-          {children}
-        </NextAuthProvider>
+            <NextAuthProvider session={session}>
+              <SideMenu />
+              <Box 
+                component="main"
+                sx={{
+                  ml: { sm: "240px" },
+                  flexGrow: 1,
+                  backgroundColor: `var(--mui-palette-background-default)`,
+                  overflow: "auto",
+                }}
+              >
+                <Stack
+                  spacing={2}
+                  sx={{
+                    alignItems: "center",
+                    mx: 3,
+                    pb: 5,
+                    mt: { xs: 8, md: 0 },
+                  }}
+                >
+                  {children}
+                </Stack>
+              </Box>
+            </NextAuthProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>
