@@ -13,13 +13,7 @@ export default function ColorSchemeToggle(props: IconButtonProps) {
   }, []);
 
   if (!mounted) {
-    return (
-      <IconButton
-        {...other}
-        sx={sx}
-        disabled
-      />
-    );
+    return <IconButton {...other} sx={sx} disabled />;
   }
 
   return (

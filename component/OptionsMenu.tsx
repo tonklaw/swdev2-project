@@ -11,7 +11,6 @@ import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
 import { signIn, signOut, useSession } from "next-auth/react";
 
-
 export default function OptionsMenu() {
   const { status } = useSession();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -21,7 +20,7 @@ export default function OptionsMenu() {
   };
   const handleClose = () => {
     setAnchorEl(null);
-  }
+  };
 
   return (
     <React.Fragment>
@@ -39,29 +38,33 @@ export default function OptionsMenu() {
         open={open}
         onClose={handleClose}
         onClick={handleClose}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         sx={{
-          '& .MuiMenu-paper': {
+          "& .MuiMenu-paper": {
             padding: 0,
             minWidth: "160px",
           },
-          '& .MuiMenu-list': {
+          "& .MuiMenu-list": {
             padding: "4px",
           },
-          '& .divider': {
+          "& .divider": {
             margin: "4px -4px",
-          }
+          },
         }}
       >
         {status === "authenticated" && [
-          <MenuItem key="profile" onClick={handleClose}>Profile</MenuItem>,
-          <MenuItem key="settings" onClick={handleClose}>Settings</MenuItem>,
+          <MenuItem key="profile" onClick={handleClose}>
+            Profile
+          </MenuItem>,
+          <MenuItem key="settings" onClick={handleClose}>
+            Settings
+          </MenuItem>,
           <Divider key="divider1" className="divider" />,
           // <Divider key="divider2" className="divider" />
         ]}
 
-        <MenuItem 
+        <MenuItem
           onClick={() => {
             if (status === "authenticated") {
               signOut();
@@ -70,11 +73,11 @@ export default function OptionsMenu() {
             }
             handleClose();
           }}
-          sx={{ 
+          sx={{
             "& .MuiListItemIcon-root": {
               ml: "auto",
               minWidth: 0,
-            }
+            },
           }}
         >
           {status === "authenticated" ? (

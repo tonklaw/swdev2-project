@@ -20,26 +20,27 @@ export default function SidebarAvatar() {
         borderTop: "1px solid var(--mui-palette-divider)",
       }}
     >
-      <Avatar 
-        alt={user?.name || "User Avatar"}
-        sx={{ width: 36, height: 36 }}
-      >{user?.name?.charAt(0).toUpperCase()}</Avatar>
+      <Avatar alt={user?.name || "User Avatar"} sx={{ width: 36, height: 36 }}>
+        {user?.name?.charAt(0).toUpperCase()}
+      </Avatar>
       <Box sx={{ mr: "auto" }}>
-        <Typography 
+        <Typography
           variant="body2"
-          sx={{ 
+          sx={{
             overflow: "hidden",
             textOverflow: "ellipsis",
-            whiteSpace: "nowrap"
-          }}>{status === "authenticated" ? user?.name : "Guest"}</Typography>
+            whiteSpace: "nowrap",
+          }}
+        >
+          {status === "authenticated" ? user?.name : "Guest"}
+        </Typography>
         {status === "authenticated" && (
-          <Typography 
-            variant="caption"
-            sx={{ color: "text.secondary" }}
-          >{user?.email}</Typography>
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
+            {user?.email}
+          </Typography>
         )}
       </Box>
       <OptionsMenu />
     </Stack>
-  )
+  );
 }
