@@ -1,16 +1,17 @@
 "use client";
-import AppBar from "@mui/material/AppBar";
-import Stack from "@mui/material/Stack";
-import MuiToolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import Inventory2Rounded from "@mui/icons-material/Inventory2Rounded";
-import React from "react";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import AppBar from "@mui/material/AppBar";
+import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import { tabsClasses } from "@mui/material/Tabs";
+import MuiToolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import { useSession } from "next-auth/react";
-import IconButton from "@mui/material/IconButton";
+import React from "react";
+
 import SideMenuMobile from "./SideMenuMobile";
-import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 
 const Toolbar = styled(MuiToolbar)({
   width: "100%",

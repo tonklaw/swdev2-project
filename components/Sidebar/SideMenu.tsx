@@ -1,9 +1,10 @@
-import Drawer from "@mui/material/Drawer";
-import Box from "@mui/material/Box";
 import Inventory2Rounded from "@mui/icons-material/Inventory2Rounded";
-import Typography from "@mui/material/Typography";
-import ColorSchemeToggle from "./ColorSchemeToggle";
+import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import Typography from "@mui/material/Typography";
+
+import ColorSchemeToggle from "./ColorSchemeToggle";
 import MenuContent from "./MenuContent";
 import SidebarAvatar from "./SidebarAvatar";
 

@@ -1,12 +1,12 @@
-import Box from "@mui/material/Box";
 import Inventory2Rounded from "@mui/icons-material/Inventory2Rounded";
-import Typography from "@mui/material/Typography";
-import ColorSchemeToggle from "./ColorSchemeToggle";
+import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import Typography from "@mui/material/Typography";
+
+import ColorSchemeToggle from "./ColorSchemeToggle";
 import MenuContent from "./MenuContent";
 import SidebarAvatar from "./SidebarAvatar";
-
-import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
 interface SideMenuMobileProps {
   open: boolean | undefined;
