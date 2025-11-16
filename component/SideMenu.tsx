@@ -49,7 +49,7 @@ export default function SideMenu() {
         <MenuContent />
       </Box>
       <Divider />
-        <SidebarAvatar />
+      <SidebarAvatar />
     </Drawer>
   );
 }

@@ -1,4 +1,5 @@
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
 
 export async function userRegister(userData: User) {
   const response = await fetch(`${API_URL}/auth/register`, {
@@ -36,11 +37,11 @@ export async function userLogout(token: string) {
   const response = await fetch(`${API_URL}/auth/logout`, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
   });
-  
+
   if (!response.ok) {
     throw new Error("Failed to logout");
   }
@@ -52,7 +53,7 @@ export async function userGetSession(token: string) {
   const response = await fetch(`${API_URL}/auth/me`, {
     method: "GET",
     headers: {
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
   });
