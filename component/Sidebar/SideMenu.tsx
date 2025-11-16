@@ -15,7 +15,14 @@ export default function SideMenu() {
       variant="permanent"
       sx={{
         width: 240,
-        display: { xs: "none", sm: "block" },
+        position: { xs: "fixed", md: "sticky" },
+        transform: {
+          xs: "translateX(calc(100% * (var(--SideNavigation-slideIn, 0) - 1)))",
+          md: "none",
+        },
+        transition: "transform 0.4s, width 0.4s",
+        zIndex: 10000,
+        height: "100dvh",
         flexShrink: 0,
         [`& .MuiDrawer-paper`]: {
           width: 240,

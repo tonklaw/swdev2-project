@@ -3,6 +3,9 @@
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import { useColorScheme } from "@mui/material/styles";
 import React from "react";
+import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
+import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
+import ComputerRoundedIcon from "@mui/icons-material/ComputerRounded";
 
 export default function ColorSchemeToggle(props: IconButtonProps) {
   const { onClick, sx, ...other } = props;
@@ -15,6 +18,12 @@ export default function ColorSchemeToggle(props: IconButtonProps) {
   if (!mounted) {
     return <IconButton {...other} sx={sx} disabled />;
   }
+
+  const icon = {
+    light: <LightModeRoundedIcon />,
+    dark: <DarkModeRoundedIcon />,
+    system: <ComputerRoundedIcon />,
+  };
 
   return (
     <IconButton
@@ -36,7 +45,7 @@ export default function ColorSchemeToggle(props: IconButtonProps) {
       sx={sx}
       {...other}
     >
-      {mode === "light" ? "🌞" : mode === "dark" ? "🌜" : "🖥️"}
+      {icon[mode ?? "system"]}
     </IconButton>
   );
 }
