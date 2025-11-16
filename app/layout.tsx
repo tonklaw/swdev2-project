@@ -4,7 +4,10 @@ import "./globals.css"
 import NextAuthProvider from "@/providers/NextAuthProvider"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import AppTheme from "@/theme/AppTheme"
+import { ThemeProvider } from "@mui/material/styles"
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
+import CssBaseline from "@mui/material/CssBaseline"
+import theme from "@/theme/theme"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,11 +28,14 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
-        <AppTheme>
+        <AppRouterCacheProvider>
+          <ThemeProvider theme={theme}>
+          <CssBaseline enableColorScheme />
         <NextAuthProvider session={session}>
           {children}
         </NextAuthProvider>
-        </AppTheme>
+          </ThemeProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   )
