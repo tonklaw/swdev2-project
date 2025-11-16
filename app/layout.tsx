@@ -10,6 +10,8 @@ import { Inter } from "next/font/google";
 import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { BreadcrumbProvider } from "@/components/Breadcrumbs/BreadcrumbContext";
+import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
 import AppNavBar from "@/components/Sidebar/AppNavBar";
 import SideMenu from "@/components/Sidebar/SideMenu";
 import NextAuthProvider from "@/providers/NextAuthProvider";
@@ -40,27 +42,30 @@ export default async function RootLayout({
             <NextAuthProvider session={session}>
               <SideMenu />
               <AppNavBar />
-              <Box
-                component="main"
-                sx={{
-                  ml: { md: "240px" },
-                  flexGrow: 1,
-                  backgroundColor: `var(--mui-palette-background-default)`,
-                  overflow: "auto",
-                }}
-              >
-                <Stack
-                  spacing={2}
+              <BreadcrumbProvider>
+                <Box
+                  component="main"
                   sx={{
-                    alignItems: "center",
-                    mx: 3,
-                    pb: 5,
-                    mt: { xs: 8, md: 0 },
+                    ml: { md: "240px" },
+                    flexGrow: 1,
+                    backgroundColor: `var(--mui-palette-background-default)`,
+                    overflow: "auto",
                   }}
                 >
-                  {children}
-                </Stack>
-              </Box>
+                  <Stack
+                    spacing={2}
+                    sx={{
+                      alignItems: "center",
+                      mx: 3,
+                      pb: 5,
+                      mt: { xs: 8, md: 0 },
+                    }}
+                  >
+                    <Breadcrumbs />
+                    {children}
+                  </Stack>
+                </Box>
+              </BreadcrumbProvider>
             </NextAuthProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>

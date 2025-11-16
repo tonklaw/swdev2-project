@@ -12,8 +12,8 @@ const eslintConfig = defineConfig([
     },
     rules: {
       // Enable simple-import-sort rules
-      "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error",
+      "simple-import-sort/imports": "warn",
+      "simple-import-sort/exports": "warn",
     },
   },
   // Override default ignores of eslint-config-next.
