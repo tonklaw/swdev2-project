@@ -1,16 +1,6 @@
-import { getServerSession } from "next-auth";
 import Image from "next/image";
-import { authOptions } from "./api/auth/[...nextauth]/route";
-import { userGetSession } from "@/libs/auth";
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user.token) {
-    console.log("No valid session found.");
-  } else {
-    const profile = await userGetSession(session.user.token);
-    console.log("User profile:", profile);
-  }
   
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
