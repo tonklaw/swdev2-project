@@ -27,10 +27,14 @@ export default function OptionsMenu() {
       <IconButton
         size="small"
         aria-label="options"
-        onClick={handleClick}
+        onClick={status === "authenticated" ? handleClick : () => signIn()}
         sx={{ borderColor: "transparent" }}
       >
-        <MoreVertRoundedIcon />
+        {status === "authenticated" ? (
+          <MoreVertRoundedIcon />
+        ) : (
+          <LoginRoundedIcon />
+        )}
       </IconButton>
       <Menu
         anchorEl={anchorEl}
@@ -53,17 +57,9 @@ export default function OptionsMenu() {
           },
         }}
       >
-        {status === "authenticated" && [
-          <MenuItem key="profile" onClick={handleClose}>
-            Profile
-          </MenuItem>,
-          <MenuItem key="settings" onClick={handleClose}>
-            Settings
-          </MenuItem>,
-          <Divider key="divider1" className="divider" />,
-          // <Divider key="divider2" className="divider" />
-        ]}
-
+        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <MenuItem onClick={handleClose}>Settings</MenuItem>
+        <Divider />
         <MenuItem
           onClick={() => {
             if (status === "authenticated") {
@@ -80,21 +76,10 @@ export default function OptionsMenu() {
             },
           }}
         >
-          {status === "authenticated" ? (
-            <>
-              <ListItemText>Logout</ListItemText>
-              <ListItemIcon>
-                <LogoutRoundedIcon fontSize="small" />
-              </ListItemIcon>
-            </>
-          ) : (
-            <>
-              <ListItemText>Login</ListItemText>
-              <ListItemIcon>
-                <LoginRoundedIcon fontSize="small" />
-              </ListItemIcon>
-            </>
-          )}
+          <ListItemText>Logout</ListItemText>
+          <ListItemIcon>
+            <LogoutRoundedIcon fontSize="small" />
+          </ListItemIcon>
         </MenuItem>
       </Menu>
     </React.Fragment>
