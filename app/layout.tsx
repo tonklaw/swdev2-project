@@ -1,15 +1,18 @@
+import "./globals.css";
+
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import Stack from "@mui/material/Stack";
+import { ThemeProvider } from "@mui/material/styles";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import NextAuthProvider from "@/providers/NextAuthProvider";
 import { getServerSession } from "next-auth/next";
+
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import SideMenu from "@/component/SideMenu";
-import { ThemeProvider } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
-import CssBaseline from "@mui/material/CssBaseline";
+import AppNavBar from "@/components/Sidebar/AppNavBar";
+import SideMenu from "@/components/Sidebar/SideMenu";
+import NextAuthProvider from "@/providers/NextAuthProvider";
 import theme from "@/theme/theme";
 
 const inter = Inter({
@@ -36,10 +39,11 @@ export default async function RootLayout({
             <CssBaseline enableColorScheme />
             <NextAuthProvider session={session}>
               <SideMenu />
+              <AppNavBar />
               <Box
                 component="main"
                 sx={{
-                  ml: { sm: "240px" },
+                  ml: { md: "240px" },
                   flexGrow: 1,
                   backgroundColor: `var(--mui-palette-background-default)`,
                   overflow: "auto",

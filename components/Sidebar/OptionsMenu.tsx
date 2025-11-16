@@ -1,15 +1,15 @@
 "use client";
-import React from "react";
-import IconButton from "@mui/material/IconButton";
+import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Divider from "@mui/material/Divider";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
 import { signIn, signOut, useSession } from "next-auth/react";
+import React from "react";
 
 export default function OptionsMenu() {
   const { status } = useSession();
@@ -27,10 +27,14 @@ export default function OptionsMenu() {
       <IconButton
         size="small"
         aria-label="options"
-        onClick={handleClick}
+        onClick={status === "authenticated" ? handleClick : () => signIn()}
         sx={{ borderColor: "transparent" }}
       >
-        <MoreVertRoundedIcon />
+        {status === "authenticated" ? (
+          <MoreVertRoundedIcon />
+        ) : (
+          <LoginRoundedIcon />
+        )}
       </IconButton>
       <Menu
         anchorEl={anchorEl}
@@ -53,17 +57,9 @@ export default function OptionsMenu() {
           },
         }}
       >
-        {status === "authenticated" && [
-          <MenuItem key="profile" onClick={handleClose}>
-            Profile
-          </MenuItem>,
-          <MenuItem key="settings" onClick={handleClose}>
-            Settings
-          </MenuItem>,
-          <Divider key="divider1" className="divider" />,
-          // <Divider key="divider2" className="divider" />
-        ]}
-
+        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <MenuItem onClick={handleClose}>Settings</MenuItem>
+        <Divider />
         <MenuItem
           onClick={() => {
             if (status === "authenticated") {
@@ -80,21 +76,10 @@ export default function OptionsMenu() {
             },
           }}
         >
-          {status === "authenticated" ? (
-            <>
-              <ListItemText>Logout</ListItemText>
-              <ListItemIcon>
-                <LogoutRoundedIcon fontSize="small" />
-              </ListItemIcon>
-            </>
-          ) : (
-            <>
-              <ListItemText>Login</ListItemText>
-              <ListItemIcon>
-                <LoginRoundedIcon fontSize="small" />
-              </ListItemIcon>
-            </>
-          )}
+          <ListItemText>Logout</ListItemText>
+          <ListItemIcon>
+            <LogoutRoundedIcon fontSize="small" />
+          </ListItemIcon>
         </MenuItem>
       </Menu>
     </React.Fragment>

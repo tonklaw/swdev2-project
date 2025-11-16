@@ -1,5 +1,8 @@
 "use client";
 
+import ComputerRoundedIcon from "@mui/icons-material/ComputerRounded";
+import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
+import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import { useColorScheme } from "@mui/material/styles";
 import React from "react";
@@ -15,6 +18,12 @@ export default function ColorSchemeToggle(props: IconButtonProps) {
   if (!mounted) {
     return <IconButton {...other} sx={sx} disabled />;
   }
+
+  const icon = {
+    light: <LightModeRoundedIcon />,
+    dark: <DarkModeRoundedIcon />,
+    system: <ComputerRoundedIcon />,
+  };
 
   return (
     <IconButton
@@ -36,7 +45,7 @@ export default function ColorSchemeToggle(props: IconButtonProps) {
       sx={sx}
       {...other}
     >
-      {mode === "light" ? "🌞" : mode === "dark" ? "🌜" : "🖥️"}
+      {icon[mode ?? "system"]}
     </IconButton>
   );
 }

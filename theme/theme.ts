@@ -1,14 +1,15 @@
 "use client";
 import { createTheme } from "@mui/material/styles";
-import { colorSchemes, typography, shadows, shape } from "./themePrimitives";
-import { inputsCustomizations } from "./customizations/inputs";
-import { dataDisplaysCustomizations } from "./customizations/dataDisplays";
-import { feedbacksCustomizations } from "./customizations/feedbacks";
-import { navigationsCustomizations } from "./customizations/navigations";
-import { surfacesCustomizations } from "./customizations/surfaces";
+
 import { chartsCustomizations } from "./customizations/charts";
+import { dataDisplaysCustomizations } from "./customizations/dataDisplays";
 import { dataGridCustomizations } from "./customizations/dataGrid";
 import { datePickersCustomizations } from "./customizations/datePickers";
+import { feedbacksCustomizations } from "./customizations/feedbacks";
+import { inputsCustomizations } from "./customizations/inputs";
+import { navigationsCustomizations } from "./customizations/navigations";
+import { surfacesCustomizations } from "./customizations/surfaces";
+import { colorSchemes, shadows, shape, typography } from "./themePrimitives";
 
 const theme = createTheme({
   cssVariables: {

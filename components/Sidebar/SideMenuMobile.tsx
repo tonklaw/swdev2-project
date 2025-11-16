@@ -1,24 +1,39 @@
-import Drawer from "@mui/material/Drawer";
-import Box from "@mui/material/Box";
 import Inventory2Rounded from "@mui/icons-material/Inventory2Rounded";
-import Typography from "@mui/material/Typography";
-import ColorSchemeToggle from "./ColorSchemeToggle";
+import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import Typography from "@mui/material/Typography";
+
+import ColorSchemeToggle from "./ColorSchemeToggle";
 import MenuContent from "./MenuContent";
 import SidebarAvatar from "./SidebarAvatar";
 
-export default function SideMenu() {
-  // const theme = useTheme();
+interface SideMenuMobileProps {
+  open: boolean | undefined;
+  toggleDrawer: (open: boolean) => () => void;
+}
+
+export default function SideMenuMobile({
+  open,
+  toggleDrawer,
+}: SideMenuMobileProps) {
+  const iOS =
+    typeof navigator !== "undefined" &&
+    /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   return (
-    <Drawer
-      variant="permanent"
+    <SwipeableDrawer
+      disableBackdropTransition={!iOS}
+      disableDiscovery={iOS}
+      anchor="left"
+      open={open}
+      onOpen={toggleDrawer(true)}
+      onClose={toggleDrawer(false)}
       sx={{
-        width: 240,
-        display: { xs: "none", sm: "block" },
-        flexShrink: 0,
+        // zIndex: 10001,
         [`& .MuiDrawer-paper`]: {
-          width: 240,
+          // width: 240,
+          backgroundImage: "none",
           boxSizing: "border-box",
           backgroundColor: "var(--mui-palette-background-paper)",
         },
@@ -50,6 +65,6 @@ export default function SideMenu() {
       </Box>
       <Divider />
       <SidebarAvatar />
-    </Drawer>
+    </SwipeableDrawer>
   );
 }
