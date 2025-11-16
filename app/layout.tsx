@@ -10,12 +10,12 @@ import { Inter } from "next/font/google";
 import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { BreadcrumbProvider } from "@/components/Breadcrumbs/BreadcrumbContext";
+import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
 import AppNavBar from "@/components/Sidebar/AppNavBar";
 import SideMenu from "@/components/Sidebar/SideMenu";
 import NextAuthProvider from "@/providers/NextAuthProvider";
 import theme from "@/theme/theme";
-import { BreadcrumbProvider } from "@/components/Breadcrumbs/BreadcrumbContext";
-import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
 
 const inter = Inter({
   subsets: ["latin"],
