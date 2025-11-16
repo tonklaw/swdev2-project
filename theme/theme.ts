@@ -11,7 +11,9 @@ import { dataGridCustomizations } from "./customizations/dataGrid";
 import { datePickersCustomizations } from "./customizations/datePickers";
 
 const theme = createTheme({
-  cssVariables: true,
+  cssVariables: {
+    colorSchemeSelector: "data",
+  },
   colorSchemes,
   typography,
   shadows,
