@@ -63,7 +63,11 @@ export default function AppNavBar() {
             gap: 1,
           }}
         >
-          <IconButton aria-label="menu" onClick={toggleDrawer(true)}>
+          <IconButton
+            aria-label="menu"
+            onClick={toggleDrawer(true)}
+            sx={{ m: 0.5 }}
+          >
             <MenuRoundedIcon />
           </IconButton>
           <Stack
