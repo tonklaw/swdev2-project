@@ -1,4 +1,4 @@
-import { CardMedia } from "@mui/material";
+import { CardActionArea, CardMedia } from "@mui/material";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Chip from "@mui/material/Chip";
@@ -12,9 +12,10 @@ import RequestButton from "./RequestButton";
 
 interface ProductCardProps {
   product: Product;
+  onDelete: () => void;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, onDelete }: ProductCardProps) {
   let stockStatusColor = "text.primary";
   if (product.stockQuantity === 0) {
     stockStatusColor = "error.main";
@@ -45,20 +46,27 @@ export default function ProductCard({ product }: ProductCardProps) {
         >
           {product.name}
         </Typography>
-        <ModifyButton product={product} size="small" sx={{ ml: "auto" }} />
+        <ModifyButton
+          product={product}
+          size="small"
+          sx={{ ml: "auto" }}
+          onDelete={onDelete}
+        />
       </Box>
-      <CardMedia
-        component="img"
-        image={product.picture}
-        alt={product.name}
-        sx={{
-          width: "100%",
-          aspectRatio: "3 / 2",
-          objectFit: "cover",
-          maxHeight: "100%",
-          my: 0.5,
-        }}
-      />
+      <CardActionArea href={`/inventory/${product.id}`}>
+        <CardMedia
+          component="img"
+          image={product.picture}
+          alt={product.name}
+          sx={{
+            width: "100%",
+            aspectRatio: "3 / 2",
+            objectFit: "cover",
+            maxHeight: "100%",
+            my: 0.5,
+          }}
+        />
+      </CardActionArea>
       <Box
         minHeight={120}
         sx={{

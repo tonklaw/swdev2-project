@@ -15,10 +15,16 @@ import { deleteProduct } from "@/libs/products";
 
 interface ModifyButtonProps extends IconButtonProps {
   product: Product;
+  onDelete: () => void;
 }
 
-export default function ModifyButton({ product, ...props }: ModifyButtonProps) {
+export default function ModifyButton({
+  product,
+  onDelete,
+  ...props
+}: ModifyButtonProps) {
   const { data: session, status } = useSession();
+  const [deleteSuccess, setDeleteSuccess] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState("");
@@ -45,6 +51,7 @@ export default function ModifyButton({ product, ...props }: ModifyButtonProps) {
     try {
       await deleteProduct(session?.user?.token as string, product.id);
       setSnackbarMessage(`Product "${product.name}" deleted successfully.`);
+      setDeleteSuccess(true);
     } catch (error) {
       setSnackbarMessage(
         `Failed to delete product "${product.name}": ${error}`,
@@ -61,7 +68,10 @@ export default function ModifyButton({ product, ...props }: ModifyButtonProps) {
         onClick={handleClick}
         sx={{
           borderColor: "transparent",
-          display: status === "authenticated" ? "inline-flex" : "none",
+          display:
+            status === "authenticated" && session?.user?.role === "admin"
+              ? "inline-flex"
+              : "none",
         }}
       >
         <MoreVertRoundedIcon />
@@ -142,6 +152,9 @@ export default function ModifyButton({ product, ...props }: ModifyButtonProps) {
         autoHideDuration={1000}
         onClose={() => {
           setSnackbarOpen(false);
+          if (deleteSuccess) {
+            onDelete();
+          }
         }}
       />
     </React.Fragment>
