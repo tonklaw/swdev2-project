@@ -1,13 +1,17 @@
 const API_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
 
-export async function getRequests(token: string) {
+export async function getRequests(token?: string) {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const response = await fetch(`${API_URL}/requests`, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+    headers,
   });
 
   if (!response.ok) {
@@ -72,12 +76,12 @@ export async function deleteRequest(token: string, requestId: string) {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
-      "  Content-Type": "application/json",
+      "Content-Type": "application/json",
     },
   });
 
   if (!response.ok) {
-    throw new Error("Failed to delete quest");
+    throw new Error("Failed to delete request");
   }
   return await response.json();
 }
