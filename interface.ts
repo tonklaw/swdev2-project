@@ -9,6 +9,7 @@ interface User {
 }
 
 interface Product {
+  id: string;
   name: string;
   sku: string;
   description: string;
@@ -21,6 +22,7 @@ interface Product {
 }
 
 interface Request {
+  id: string;
   transactionDate: string;
   transactionType: "stockIn" | "stockOut";
   itemAmount: number;

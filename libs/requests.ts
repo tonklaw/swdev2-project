@@ -72,12 +72,12 @@ export async function deleteRequest(token: string, requestId: string) {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      "  Content-Type": "application/json",
     },
   });
 
   if (!response.ok) {
-    throw new Error("Failed to delete request");
+    throw new Error("Failed to delete quest");
   }
   return await response.json();
 }

@@ -17,11 +17,12 @@ export default function Breadcrumbs() {
   return (
     <MUIBreadcrumbs
       aria-label="breadcrumb"
-      spacing={2}
+      // spacing={2}
       separator={<NavigateNextRoundedIcon fontSize="small" />}
       sx={{
         // display: { xs: 'none', md: 'flex' },
         width: "100%",
+        maxWidth: { sm: "100%", md: "1700px" },
         pt: 1.5,
         ["& .MuiBreadcrumbs-separator"]: { color: "action.disabled" },
         ["& .MuiBreadcrumbs-ol"]: { alignItems: "center" },
