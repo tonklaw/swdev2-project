@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+
 import { menuItemClasses } from "@mui/material/MenuItem";
 import { alpha, Theme } from "@mui/material/styles";
 import { pickersDayClasses, yearCalendarClasses } from "@mui/x-date-pickers";

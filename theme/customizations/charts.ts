@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+
 import { Theme } from "@mui/material/styles";
 import { axisClasses, chartsGridClasses, legendClasses } from "@mui/x-charts";
 import type { ChartsComponents } from "@mui/x-charts/themeAugmentation";

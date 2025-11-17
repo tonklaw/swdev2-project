@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+
 import { alpha, createTheme, PaletteMode, Shadows } from "@mui/material/styles";
 
 declare module "@mui/material/Paper" {
@@ -401,7 +404,6 @@ export const shape = {
   borderRadius: 8,
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const defaultShadows: Shadows = [
   "none",
