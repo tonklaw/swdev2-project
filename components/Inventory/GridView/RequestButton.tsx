@@ -2,6 +2,8 @@
 import AssignmentReturnRoundedIcon from "@mui/icons-material/AssignmentReturnRounded";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Link from "@mui/material/Link";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { useSession } from "next-auth/react";
 
 interface RequestButtonProps extends IconButtonProps {
@@ -19,13 +21,34 @@ export default function RequestButton({
   }
 
   return (
-    <IconButton {...props}>
-      <Link
-        href={`/request/new?productId=${productId}`}
-        style={{ textDecoration: "none", color: "inherit" }}
+    <Stack
+      sx={{
+        minWidth: 0,
+        direction: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        sx={{
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: "100%",
+        }}
       >
-        <AssignmentReturnRoundedIcon></AssignmentReturnRoundedIcon>
-      </Link>
-    </IconButton>
+        Request
+      </Typography>
+      <IconButton {...props}>
+        <Link
+          href={`/request/new?productId=${productId}`}
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <AssignmentReturnRoundedIcon />
+        </Link>
+      </IconButton>
+    </Stack>
   );
 }

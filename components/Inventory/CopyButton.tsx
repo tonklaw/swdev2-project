@@ -13,14 +13,24 @@ export default function CopyButton(props: CopyButtonProps) {
 
   const handleCopy = () => {
     const textToCopy = props.text;
-    navigator.clipboard.writeText(textToCopy).then(
-      () => {
-        console.log("Text copied to clipboard");
-      },
-      (err) => {
-        console.error("Could not copy text: ", err);
-      },
-    );
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        navigator.clipboard.writeText(textToCopy);
+        return true;
+      } catch {}
+    }
+
+    // fallback
+    const el = document.createElement("textarea");
+    el.value = textToCopy;
+    el.setAttribute("readonly", "");
+    el.style.position = "absolute";
+    el.style.left = "-9999px";
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
+    return false;
   };
 
   return (
