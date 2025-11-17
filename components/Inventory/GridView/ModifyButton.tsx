@@ -15,7 +15,7 @@ import { deleteProduct } from "@/libs/products";
 
 interface ModifyButtonProps extends IconButtonProps {
   product: Product;
-  onDelete: () => void;
+  onDelete?: () => void;
 }
 
 export default function ModifyButton({
@@ -152,7 +152,7 @@ export default function ModifyButton({
         autoHideDuration={1000}
         onClose={() => {
           setSnackbarOpen(false);
-          if (deleteSuccess) {
+          if (deleteSuccess && onDelete) {
             onDelete();
           }
         }}

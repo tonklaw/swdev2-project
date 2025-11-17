@@ -6,9 +6,9 @@ import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
-import CopyButton from "../CopyButton";
-import ModifyButton from "./ModifyButton";
-import RequestButton from "./RequestButton";
+import CopyButton from "./CopyButton";
+import ModifyButton from "./GridView/ModifyButton";
+import RequestButton from "./GridView/RequestButton";
 
 interface ProductCardProps {
   product: Product;

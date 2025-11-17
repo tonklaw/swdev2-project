@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import React from "react";
 
 import ItemsCountMenu from "./ItemsCountMenu";
-import ProductCard from "./ProductCard";
+import ProductCard from "../ProductCard";
 
 interface ProductGridProps {
   fetchProducts?: {
@@ -115,9 +115,11 @@ export default function ProductGrid({ fetchProducts }: ProductGridProps) {
         sx={{
           width: "100%",
           mt: 2,
-          justifyContent: "flex-end",
+          justifyContent: { xs: "center", sm: "flex-end" },
+          gap: 1,
           alignItems: "center",
-          display: { xs: "none", sm: "flex" },
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
         }}
       >
         <Typography
