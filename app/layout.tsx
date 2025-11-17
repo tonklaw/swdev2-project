@@ -26,6 +26,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Trackr",
   description: "Inventory management made easy",
+  other: {
+    "format-detection": "telephone=no",
+  },
 };
 
 export default async function RootLayout({
