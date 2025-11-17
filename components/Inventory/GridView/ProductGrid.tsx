@@ -30,6 +30,7 @@ export default function ProductGrid({ fetchProducts }: ProductGridProps) {
 
   React.useEffect(() => {
     setProducts(initialProducts);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChangePage = (

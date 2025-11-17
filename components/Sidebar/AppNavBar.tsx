@@ -8,7 +8,6 @@ import { styled } from "@mui/material/styles";
 import { tabsClasses } from "@mui/material/Tabs";
 import MuiToolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { useSession } from "next-auth/react";
 import React from "react";
 
 import SideMenuMobile from "./SideMenuMobile";
@@ -31,10 +30,7 @@ const Toolbar = styled(MuiToolbar)({
 });
 
 export default function AppNavBar() {
-  const { data: session, status } = useSession();
   const [open, setOpen] = React.useState(false);
-
-  const user = session?.user || null;
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
