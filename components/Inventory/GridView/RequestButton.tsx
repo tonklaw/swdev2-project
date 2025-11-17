@@ -21,7 +21,7 @@ export default function RequestButton({
   return (
     <IconButton {...props}>
       <Link
-        href={`/request/new?productId=${productId}`}
+        href={`/requests/new?productId=${productId}`}
         style={{ textDecoration: "none", color: "inherit" }}
       >
         <AssignmentReturnRoundedIcon></AssignmentReturnRoundedIcon>

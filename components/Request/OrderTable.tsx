@@ -405,37 +405,7 @@ export default function OrderTable() {
             md: "flex",
           },
         }}
-      >
-        <Button
-          size="sm"
-          variant="outlined"
-          color="neutral"
-          startDecorator={<KeyboardArrowLeftIcon />}
-        >
-          Previous
-        </Button>
-
-        <Box sx={{ flex: 1 }} />
-        {["1", "2", "3", "…", "8", "9", "10"].map((page) => (
-          <IconButton
-            key={page}
-            size="sm"
-            variant={Number(page) ? "outlined" : "plain"}
-            color="neutral"
-          >
-            {page}
-          </IconButton>
-        ))}
-        <Box sx={{ flex: 1 }} />
-        <Button
-          size="sm"
-          variant="outlined"
-          color="neutral"
-          endDecorator={<KeyboardArrowRightIcon />}
-        >
-          Next
-        </Button>
-      </Box>
+      ></Box>
     </React.Fragment>
   );
 }

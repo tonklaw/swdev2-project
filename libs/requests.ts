@@ -1,3 +1,11 @@
+type InventoryRequest = {
+  id: string;
+  transactionDate: string;
+  transactionType: "stockIn" | "stockOut";
+  itemAmount: number;
+  product_id: string | Product;
+};
+
 const API_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
 
@@ -20,7 +28,10 @@ export async function getRequests(token?: string) {
   return await response.json();
 }
 
-export async function createRequest(token: string, requestData: Request) {
+export async function createRequest(
+  token: string,
+  requestData: InventoryRequest,
+) {
   const response = await fetch(`${API_URL}/requests`, {
     method: "POST",
     headers: {
