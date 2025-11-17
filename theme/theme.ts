@@ -13,7 +13,7 @@ import { colorSchemes, shadows, shape, typography } from "./themePrimitives";
 
 const theme = createTheme({
   cssVariables: {
-    colorSchemeSelector: "data",
+    colorSchemeSelector: "class",
   },
   colorSchemes,
   typography,
