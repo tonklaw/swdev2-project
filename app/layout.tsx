@@ -2,6 +2,7 @@ import "./globals.css";
 
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
+import InitColorSchemeScript from "@mui/material/InitColorSchemeScript";
 import Stack from "@mui/material/Stack";
 import { ThemeProvider } from "@mui/material/styles";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
@@ -34,11 +35,12 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession(authOptions);
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased`}>
         <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
+          <ThemeProvider theme={theme} disableTransitionOnChange>
             <CssBaseline enableColorScheme />
+            <InitColorSchemeScript attribute="class" />
             <NextAuthProvider session={session}>
               <SideMenu />
               <AppNavBar />
