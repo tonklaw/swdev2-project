@@ -5,12 +5,18 @@ import { Breadcrumbs as MUIBreadcrumbs } from "@mui/material";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { usePathname } from "next/navigation";
+import React from "react";
 
 import { useBreadcrumb } from "./BreadcrumbContext";
 
 export default function Breadcrumbs() {
+  const [mounted, setMounted] = React.useState(false);
   const pathname = usePathname();
-  const { label } = useBreadcrumb();
+  const { labels } = useBreadcrumb();
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const pathSegments = pathname.split("/").filter(Boolean);
 
@@ -29,27 +35,27 @@ export default function Breadcrumbs() {
       }}
     >
       <Link href="/">Home</Link>
-      {pathSegments.map((segment, index) => {
-        const isLast = index === pathSegments.length - 1;
-        const href = `/${pathSegments.slice(0, index + 1).join("/")}`;
+      {mounted &&
+        pathSegments.map((segment, index) => {
+          const isLast = index === pathSegments.length - 1;
+          const href = `/${pathSegments.slice(0, index + 1).join("/")}`;
 
-        const text =
-          isLast && label
-            ? label
+          const text = labels[index]
+            ? labels[index]
             : segment
                 .replace(/-/g, " ")
                 .replace(/\b\w/g, (c) => c.toUpperCase());
 
-        return isLast ? (
-          <Typography key={href} color="text.primary">
-            {text}
-          </Typography>
-        ) : (
-          <Link key={href} href={href}>
-            {text}
-          </Link>
-        );
-      })}
+          return isLast ? (
+            <Typography key={href} color="text.primary">
+              {text}
+            </Typography>
+          ) : (
+            <Link key={href} href={href}>
+              {text}
+            </Link>
+          );
+        })}
     </MUIBreadcrumbs>
   );
 }
