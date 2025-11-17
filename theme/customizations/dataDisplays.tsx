@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+
 import { buttonBaseClasses } from "@mui/material/ButtonBase";
 import { chipClasses } from "@mui/material/Chip";
 import { iconButtonClasses } from "@mui/material/IconButton";

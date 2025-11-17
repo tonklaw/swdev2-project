@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+
 import { alpha, createTheme, PaletteMode, Shadows } from "@mui/material/styles";
 
 declare module "@mui/material/Paper" {

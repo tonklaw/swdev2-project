@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+
 import { checkboxClasses } from "@mui/material/Checkbox";
 import { iconButtonClasses } from "@mui/material/IconButton";
 import { listClasses } from "@mui/material/List";

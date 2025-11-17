@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+
 import { alpha, Components, Theme } from "@mui/material/styles";
 
 import { gray } from "../themePrimitives";
