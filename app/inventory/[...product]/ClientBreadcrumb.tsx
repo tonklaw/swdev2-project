@@ -8,8 +8,10 @@ export default function ClientBreadcrumb({ title }: { title: string }) {
   const { setLabel } = useBreadcrumb();
 
   React.useEffect(() => {
+    console.log(`Setting breadcrumb label to ${title} at index 1`);
     setLabel(title, 1);
-  }, [setLabel, title]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return null;
 }

@@ -5,9 +5,9 @@ import { Breadcrumbs as MUIBreadcrumbs } from "@mui/material";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { usePathname } from "next/navigation";
+import React from "react";
 
 import { useBreadcrumb } from "./BreadcrumbContext";
-import React from "react";
 
 export default function Breadcrumbs() {
   const [mounted, setMounted] = React.useState(false);
