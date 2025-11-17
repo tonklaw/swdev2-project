@@ -1,7 +1,7 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import CredentialProvider from "next-auth/providers/credentials";
 
-import { userLogin } from "@/libs/auth";
+import { userGetSession, userLogin } from "@/libs/auth";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -15,9 +15,9 @@ export const authOptions: AuthOptions = {
         if (!credentials) return null;
 
         const user = await userLogin(credentials.email, credentials.password);
-
         if (user) {
-          return user;
+          const sessionData = await userGetSession(user.token);
+          return { ...user, role: sessionData.data.role };
         } else {
           return null;
         }
@@ -29,7 +29,7 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user }) {
       return { ...token, ...user };
     },
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       session.user = token as any;
       return session;
