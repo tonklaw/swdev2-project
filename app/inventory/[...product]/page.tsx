@@ -1,7 +1,9 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import { redirect } from "next/navigation";
 import React from "react";
 
+import ProductView from "@/components/Inventory/Product/ProductView";
 import { getProductById } from "@/libs/products";
 
 import ClientBreadcrumb from "./ClientBreadcrumb";
@@ -11,9 +13,14 @@ export default async function ProductPage({
 }: {
   params: Promise<{ product: string[] }>;
 }) {
-  // const { setLabel } = useBreadcrumb();
   const { product } = await params;
+
+  if (!product || product.length === 0) redirect("/inventory");
+  if (product.length > 1 && product[1] !== "edit")
+    redirect(`/inventory/${product[0]}`);
+
   const productId = product[0];
+  const editMode = product.length > 1 && product[1] === "edit";
 
   const { data: productData } = await getProductById(productId);
 
@@ -30,6 +37,7 @@ export default async function ProductPage({
       <Typography variant="h4" gutterBottom>
         {productData?.name}
       </Typography>
+      <ProductView product={productData!} editMode={editMode} />
     </Box>
   );
 }

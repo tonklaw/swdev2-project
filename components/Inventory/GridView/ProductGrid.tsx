@@ -7,7 +7,7 @@ import Pagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
 import React from "react";
 
-import ProductCard from "../ProductCard";
+import ProductCard from "../Product/ProductCard";
 import ItemsCountMenu from "./ItemsCountMenu";
 
 interface ProductGridProps {

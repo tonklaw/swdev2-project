@@ -382,11 +382,11 @@ export const inputsCustomizations: Components<Theme> = {
   },
   MuiOutlinedInput: {
     styleOverrides: {
-      input: {
-        padding: 0,
-      },
+      // input: {
+      //   padding: 0,
+      // },
       root: ({ theme }) => ({
-        padding: "8px 12px",
+        // padding: "8px 12px",
         color: (theme.vars || theme).palette.text.primary,
         borderRadius: (theme.vars || theme).shape.borderRadius,
         border: `1px ${(theme.vars || theme).palette.divider}`,
@@ -404,24 +404,24 @@ export const inputsCustomizations: Components<Theme> = {
             borderColor: gray[500],
           },
         }),
-        // variants: [
-        //   {
-        //     props: {
-        //       size: "small",
-        //     },
-        //     style: {
-        //       height: "2.25rem",
-        //     },
-        //   },
-        //   {
-        //     props: {
-        //       size: "medium",
-        //     },
-        //     style: {
-        //       height: "2.5rem",
-        //     },
-        //   },
-        // ],
+        variants: [
+          //   {
+          //     props: {
+          //       size: "small",
+          //     },
+          //     style: {
+          //       height: "2.25rem",
+          //     },
+          //   },
+          //   {
+          //     props: {
+          //       size: "medium",
+          //     },
+          //     style: {
+          //       height: "2.5rem",
+          //     },
+          //   },
+        ],
       }),
       // notchedOutline: {
       //   border: "none",
@@ -444,6 +444,20 @@ export const inputsCustomizations: Components<Theme> = {
         typography: theme.typography.caption,
         marginBottom: 8,
       }),
+    },
+  },
+  MuiFilledInput: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        color: (theme.vars || theme).palette.text.primary,
+        borderRadius: (theme.vars || theme).shape.borderRadius,
+        backgroundColor: (theme.vars || theme).palette.background.default,
+      }),
+      underline: {
+        "&:before, &:after": {
+          display: "none",
+        },
+      },
     },
   },
 };

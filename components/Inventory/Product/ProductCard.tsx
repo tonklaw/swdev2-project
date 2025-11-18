@@ -6,16 +6,21 @@ import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
-import CopyButton from "./CopyButton";
-import ModifyButton from "./GridView/ModifyButton";
-import RequestButton from "./GridView/RequestButton";
+import CopyButton from "../../CopyButton";
+import ModifyButton from "./ModifyButton";
+import RequestButton from "./RequestButton";
 
 interface ProductCardProps {
   product: Product;
-  onDelete: () => void;
+  onDelete?: () => void;
+  disableMenu?: boolean;
 }
 
-export default function ProductCard({ product, onDelete }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  onDelete,
+  disableMenu = false,
+}: ProductCardProps) {
   let stockStatusColor = "text.primary";
   if (product.stockQuantity === 0) {
     stockStatusColor = "error.main";
@@ -24,7 +29,7 @@ export default function ProductCard({ product, onDelete }: ProductCardProps) {
   }
 
   return (
-    <Card sx={{ p: 0, height: "100%" }}>
+    <Card sx={{ p: 0, alignItems: "stretch" }}>
       <Box
         sx={{
           display: "flex",
@@ -46,12 +51,14 @@ export default function ProductCard({ product, onDelete }: ProductCardProps) {
         >
           {product.name}
         </Typography>
-        <ModifyButton
-          product={product}
-          size="small"
-          sx={{ ml: "auto" }}
-          onDelete={onDelete}
-        />
+        {!disableMenu && (
+          <ModifyButton
+            product={product}
+            size="small"
+            sx={{ ml: "auto" }}
+            onDelete={onDelete}
+          />
+        )}
       </Box>
       <CardActionArea href={`/inventory/${product.id}`}>
         <CardMedia
@@ -161,7 +168,7 @@ export default function ProductCard({ product, onDelete }: ProductCardProps) {
               maxWidth: "100%",
             }}
           >
-            {product.price}
+            {product.price != null ? Number(product.price).toFixed(2) : "0.00"}
           </Typography>
           <Typography
             variant="caption"
