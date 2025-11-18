@@ -186,7 +186,7 @@ export default function ProductEditor({ product }: ProductEditorProps) {
             color: editing ? "warning.main" : "text.secondary",
           }}
         >
-          Product will be hidden from the inventory list when and may not be
+          Product will be hidden from the inventory list and may not be
           accessible to users.
         </FormLabel>
       </FormGroup>

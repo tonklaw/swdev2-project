@@ -94,6 +94,7 @@ export default function EditButtons({
       setSnackbarMessage(`Product "${data.name}" saved successfully.`);
       setSnackbarOpen(true);
       setEditing(false);
+      window.history.pushState({}, "", `${currentPath}`.replace(/\/edit$/, ""));
       if (onSave) onSave();
     } else {
       setSnackbarMessage(`Failed to save product "${data.name}".`);
