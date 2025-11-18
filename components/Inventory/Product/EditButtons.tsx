@@ -91,7 +91,7 @@ export default function EditButtons({
       console.log("Updating product with ID:", oldProduct!.id || newProduct.id);
       ({ success, data, error } = await updateProduct(
         session?.user?.token as string,
-        newProduct.id || oldProduct!.id!,
+        oldProduct?.id || newProduct.id!,
         newProduct,
       ));
     }
@@ -133,7 +133,7 @@ export default function EditButtons({
   const handleDelete = async () => {
     await deleteProduct(
       session?.user?.token as string,
-      newProduct.id || oldProduct!.id!,
+      oldProduct?.id || newProduct.id!,
     );
 
     setSnackbarMessage(
