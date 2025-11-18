@@ -1,6 +1,7 @@
-import { CardActionArea, CardMedia } from "@mui/material";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardMedia from "@mui/material/CardMedia";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
