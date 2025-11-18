@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 
 import ProductGrid from "@/components/Inventory/GridView/ProductGrid";
 import { getProducts } from "@/libs/products";
+import NewProductButton from "@/components/Inventory/Product/NewProductButton";
 
 export default async function InventoryPage() {
   const fetchProducts = await getProducts();
@@ -14,9 +15,19 @@ export default async function InventoryPage() {
         maxWidth: { sm: "100%", md: "1700px" },
       }}
     >
-      <Typography variant="h4" gutterBottom>
-        Product Inventory
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-start",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h4" gutterBottom>
+          Product Inventory
+        </Typography>
+
+        <NewProductButton sx={{ ml: "auto", mb: 2 }} />
+      </Box>
       <ProductGrid fetchProducts={fetchProducts} />
     </Box>
   );
