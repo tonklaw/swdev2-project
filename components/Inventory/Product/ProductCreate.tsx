@@ -18,6 +18,7 @@ export default function ProductCreate() {
     stockQuantity: 0,
     unit: "",
     picture: "",
+    isActive: true,
   });
 
   return (

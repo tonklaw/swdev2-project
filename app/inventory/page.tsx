@@ -2,8 +2,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
 import ProductGrid from "@/components/Inventory/GridView/ProductGrid";
-import { getProducts } from "@/libs/products";
 import NewProductButton from "@/components/Inventory/Product/NewProductButton";
+import { getProducts } from "@/libs/products";
 
 export default async function InventoryPage() {
   const fetchProducts = await getProducts();

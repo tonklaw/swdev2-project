@@ -16,12 +16,19 @@ import EditButtons from "./EditButtons";
 
 interface ProductEditorProps {
   product: Product;
+  setProduct?: React.Dispatch<React.SetStateAction<Product>>;
+  createMode?: boolean;
 }
 
-export default function ProductEditor({ product }: ProductEditorProps) {
+export default function ProductEditor({
+  product,
+  setProduct,
+  createMode,
+}: ProductEditorProps) {
   const router = useRouter();
 
   const [editing, setEditing] = React.useState<boolean>(false);
+  const [markErrors, setMarkErrors] = React.useState<string[]>([]);
 
   const [name, setName] = React.useState<string>(product.name);
   const [sku, setSku] = React.useState<string>(product.sku);
@@ -36,6 +43,41 @@ export default function ProductEditor({ product }: ProductEditorProps) {
   const [isActive, setIsActive] = React.useState<boolean>(
     product.isActive || false,
   );
+
+  React.useEffect(() => {
+    if (createMode) {
+      setEditing(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  React.useEffect(() => {
+    if (setProduct) {
+      setProduct({
+        id: "",
+        name: name,
+        sku: sku,
+        description: description,
+        category: category,
+        price: price,
+        stockQuantity: quantity,
+        unit: unit,
+        picture: picture,
+      });
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    name,
+    sku,
+    description,
+    category,
+    price,
+    quantity,
+    unit,
+    picture,
+    isActive,
+  ]);
 
   return (
     <Card
@@ -55,6 +97,7 @@ export default function ProductEditor({ product }: ProductEditorProps) {
         }}
       >
         <TextField
+          error={markErrors.includes("name")}
           disabled={!editing}
           id="product-name"
           variant="filled"
@@ -64,6 +107,7 @@ export default function ProductEditor({ product }: ProductEditorProps) {
           fullWidth
         />
         <TextField
+          error={markErrors.includes("sku")}
           disabled={!editing}
           id="product-sku"
           variant="filled"
@@ -74,6 +118,7 @@ export default function ProductEditor({ product }: ProductEditorProps) {
         />
       </Box>
       <TextField
+        error={markErrors.includes("description")}
         disabled={!editing}
         id="product-description"
         variant="filled"
@@ -86,6 +131,7 @@ export default function ProductEditor({ product }: ProductEditorProps) {
       />
 
       <TextField
+        error={markErrors.includes("category")}
         disabled={!editing}
         id="product-category"
         variant="filled"
@@ -104,6 +150,7 @@ export default function ProductEditor({ product }: ProductEditorProps) {
         }}
       >
         <NumberField
+          error={markErrors.includes("price")}
           disabled={!editing}
           id="product-price"
           label="Price"
@@ -126,6 +173,7 @@ export default function ProductEditor({ product }: ProductEditorProps) {
           }}
         >
           <NumberField
+            error={markErrors.includes("stockQuantity")}
             disabled={!editing}
             id="product-stock-quantity"
             label="Stock Quantity"
@@ -141,6 +189,7 @@ export default function ProductEditor({ product }: ProductEditorProps) {
             flex={3}
           />
           <TextField
+            error={markErrors.includes("unit")}
             disabled={!editing}
             id="product-unit"
             variant="filled"
@@ -153,6 +202,7 @@ export default function ProductEditor({ product }: ProductEditorProps) {
         </Box>
       </Box>
       <TextField
+        error={markErrors.includes("picture")}
         disabled={!editing}
         id="product-picture"
         variant="filled"
@@ -219,13 +269,21 @@ export default function ProductEditor({ product }: ProductEditorProps) {
           setQuantity(product.stockQuantity);
           setUnit(product.unit);
           setPicture(product.picture);
-          setIsActive(product.isActive || false);
-          router.push(`/inventory/${product.id}`);
+          setIsActive(product.isActive || true);
+          if (!createMode) router.push(`/inventory/${product.id}`);
+          if (createMode) router.push("/inventory");
         }}
-        onSave={() => {
-          router.refresh();
-        }}
+        onSave={
+          !createMode
+            ? () => {
+                router.refresh();
+                window.history.replaceState({}, "", `/inventory/${product.id}`);
+              }
+            : undefined
+        }
         setEditing={setEditing}
+        newItem={createMode}
+        markErrors={setMarkErrors}
       />
     </Card>
   );

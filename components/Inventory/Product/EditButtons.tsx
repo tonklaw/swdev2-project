@@ -17,7 +17,8 @@ interface EditButtonsProps {
   onSave?: () => void;
   setEditing: React.Dispatch<React.SetStateAction<boolean>>;
   oldProduct?: Product;
-  newItem?: boolean;
+  markErrors: React.Dispatch<React.SetStateAction<string[]>>;
+  newItem: boolean | undefined;
 }
 
 export default function EditButtons({
@@ -26,6 +27,7 @@ export default function EditButtons({
   onSave,
   newItem = false,
   newProduct,
+  markErrors,
   oldProduct = undefined,
 }: EditButtonsProps) {
   const router = useRouter();
@@ -40,7 +42,10 @@ export default function EditButtons({
 
   useEffect(() => {
     if (atEditPath) {
-      if (status === "authenticated" && session?.user.role === "admin") {
+      if (
+        (status === "authenticated" && session?.user.role === "admin") ||
+        newItem
+      ) {
         setEditing(true);
         return;
       }
@@ -74,30 +79,53 @@ export default function EditButtons({
       return;
     }
 
-    let success, data;
+    let success, data, error;
+    markErrors([]);
     if (newItem) {
-      console.log("Creating new product");
-      ({ success, data } = await createProduct(
+      const p = { ...newProduct, id: undefined, _id: undefined };
+      ({ success, data, error } = await createProduct(
         session?.user?.token as string,
-        newProduct,
+        p,
       ));
     } else {
       console.log("Updating product with ID:", oldProduct!.id || newProduct.id);
-      ({ success, data } = await updateProduct(
+      ({ success, data, error } = await updateProduct(
         session?.user?.token as string,
-        oldProduct!.id || newProduct.id,
+        newProduct.id || oldProduct!.id!,
         newProduct,
       ));
     }
 
     if (success) {
-      setSnackbarMessage(`Product "${data.name}" saved successfully.`);
+      setSnackbarMessage(
+        `Product "${data.name}" ${newItem ? "created" : "updated"} successfully.`,
+      );
       setSnackbarOpen(true);
-      setEditing(false);
-      window.history.pushState({}, "", `${currentPath}`.replace(/\/edit$/, ""));
+      if (setEditing && !newItem) setEditing(false);
       if (onSave) onSave();
+      router.push(`/inventory/${data.id}`);
+    } else if (error) {
+      const errorFields = (error as string).includes("dup key:")
+        ? (error as string)
+            .match(/dup key: { (.+) }/)?.[1]
+            .split(/,\s*/)
+            .map((s) => s.split(":")[0].trim()) || []
+        : (error as string)
+            .replace(/^[A-Za-z ]*failed:\s*/, "")
+            .split(/,\s*/)
+            .map((s) => s.split(":")[0].trim())
+            .filter(Boolean);
+      markErrors(errorFields);
+      console.log("Validation errors in fields:", errorFields);
+
+      setSnackbarMessage(
+        `Failed to save product. Please check the highlighted fields.`,
+      );
     } else {
-      setSnackbarMessage(`Failed to save product "${data.name}".`);
+      setSnackbarMessage(
+        `An unexpected error occurred while saving the product.`,
+      );
+
       setSnackbarOpen(true);
     }
   };
@@ -105,7 +133,7 @@ export default function EditButtons({
   const handleDelete = async () => {
     await deleteProduct(
       session?.user?.token as string,
-      oldProduct!.id || newProduct.id,
+      newProduct.id || oldProduct!.id!,
     );
 
     setSnackbarMessage(
@@ -128,15 +156,15 @@ export default function EditButtons({
           gap: 1,
         }}
       >
-        {atEditPath ? (
+        {atEditPath || newItem ? (
           <>
             <Button variant="contained" onClick={handleSave}>
-              Save
+              {newItem ? "Create" : "Save"}
             </Button>
             <Button
               variant="outlined"
               onClick={() => {
-                setEditing(false);
+                if (!newItem) setEditing(false);
                 onCancel();
               }}
             >
@@ -153,6 +181,7 @@ export default function EditButtons({
                 mr: "auto",
                 color: "error.main",
                 borderColor: "error.main",
+                display: newItem ? "none" : "inline-flex",
                 "&:hover": {
                   borderColor: "error.main",
                   backgroundColor: "error.main",

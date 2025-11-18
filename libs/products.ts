@@ -9,13 +9,17 @@ export async function getProducts() {
     },
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch products");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to fetch products");
+  // }
   return await response.json();
 }
 
-export async function createProduct(token: string, productData: Product) {
+export async function createProduct(
+  token: string,
+  productData: Omit<Product, "id" | "_id">,
+) {
+  console.log("Creating product with data:", productData);
   const response = await fetch(`${API_URL}/products`, {
     method: "POST",
     headers: {
@@ -25,9 +29,9 @@ export async function createProduct(token: string, productData: Product) {
     body: JSON.stringify(productData),
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to create product");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to create product");
+  // }
   return await response.json();
 }
 
@@ -39,9 +43,9 @@ export async function getProductById(productId: string) {
     },
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch product");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to fetch product");
+  // }
   return await response.json();
 }
 
@@ -59,9 +63,9 @@ export async function updateProduct(
     body: JSON.stringify(productData),
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to update product");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to update product");
+  // }
   return await response.json();
 }
 
@@ -74,9 +78,9 @@ export async function deleteProduct(token: string, productId: string) {
     },
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to delete product");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to delete product");
+  // }
   return await response.json();
 }
 
@@ -94,8 +98,8 @@ export async function updateProductStock(
     body: JSON.stringify({ stockQuantity: quantity }),
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to update product stock");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to update product stock");
+  // }
   return await response.json();
 }
