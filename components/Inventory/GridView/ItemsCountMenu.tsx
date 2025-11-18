@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowDropDownRounded } from "@mui/icons-material";
+import ArrowDropDownRounded from "@mui/icons-material/ArrowDropDownRounded";
 import Button, { ButtonProps } from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";

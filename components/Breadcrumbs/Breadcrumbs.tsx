@@ -1,7 +1,7 @@
 "use client";
 
 import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
-import { Breadcrumbs as MUIBreadcrumbs } from "@mui/material";
+import MUIBreadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { usePathname } from "next/navigation";

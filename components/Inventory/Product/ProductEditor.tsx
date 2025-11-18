@@ -1,12 +1,12 @@
 "use client";
 
-import { FormLabel } from "@mui/material";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Checkbox from "@mui/material/Checkbox";
 import Divider from "@mui/material/Divider";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
+import FormLabel from "@mui/material/FormLabel";
 import TextField from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
 import React from "react";

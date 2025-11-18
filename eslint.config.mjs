@@ -16,6 +16,16 @@ const eslintConfig = defineConfig([
       "simple-import-sort/exports": "warn",
     },
   },
+  {
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [{ regex: "^@mui\/(?!x-)[^\/]+$" }],
+        },
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
