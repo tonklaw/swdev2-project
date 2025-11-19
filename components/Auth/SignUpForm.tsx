@@ -8,6 +8,9 @@ import { signIn } from "next-auth/react";
 import React from "react";
 
 import { userRegister } from "@/libs/auth";
+import Select from "@mui/material/Select";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 export default function SignUpForm({ error }: { error: string | undefined }) {
   const [fieldErrors, setFieldErrors] = React.useState<{
@@ -22,6 +25,7 @@ export default function SignUpForm({ error }: { error: string | undefined }) {
     const fullName = data.get("fullName");
     const email = data.get("email");
     const telephone = data.get("telephone");
+    const role = data.get("role");
     const password = data.get("password");
     const confirmPassword = data.get("confirmPassword");
 
@@ -62,7 +66,7 @@ export default function SignUpForm({ error }: { error: string | undefined }) {
       email: emailStr,
       tel: telephone ? String(telephone).trim() : "",
       password: password ? String(password) : "",
-      role: "staff",
+      role: role ? String(role) : "staff",
     } as User;
 
     await userRegister(payload);
@@ -114,6 +118,16 @@ export default function SignUpForm({ error }: { error: string | undefined }) {
         name="telephone"
         autoComplete="tel"
       />
+
+      <Select
+        name="role"
+        defaultValue="staff"
+        fullWidth
+        style={{ marginTop: 16 }}
+      >
+        <MenuItem value="staff">Staff</MenuItem>
+        <MenuItem value="admin">Admin</MenuItem>
+      </Select>
 
       <TextField
         error={!!fieldErrors.password}
