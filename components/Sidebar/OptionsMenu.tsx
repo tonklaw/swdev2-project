@@ -64,9 +64,9 @@ export default function OptionsMenu() {
           },
         }}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        {/* <MenuItem onClick={handleClose}>Profile</MenuItem>
         <MenuItem onClick={handleClose}>Settings</MenuItem>
-        <Divider />
+        <Divider /> */}
         <MenuItem
           onClick={() => {
             if (status === "authenticated") {
