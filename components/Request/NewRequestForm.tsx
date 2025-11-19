@@ -39,7 +39,7 @@ export default function NewRequestForm() {
       const { data: product } = await getProductById(productId);
       setProduct(product);
     })();
-  }, []);
+  }, [productId]);
 
   const handleSubmitNew = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +56,15 @@ export default function NewRequestForm() {
       setFieldErrors((prev) => ({
         ...prev,
         itemAmount: "Item amount must be greater than 0.",
+      }));
+      setSubmitting(false);
+      return;
+    }
+
+    if (itemAmount > product!.stockQuantity && transactionType === "stockOut") {
+      setFieldErrors((prev) => ({
+        ...prev,
+        itemAmount: `Item amount exceeds current stock quantity (${product!.stockQuantity}).`,
       }));
       setSubmitting(false);
       return;

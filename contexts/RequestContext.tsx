@@ -19,6 +19,12 @@ interface RequestContextType {
   setDeleteConfirmOpen: (open: boolean) => void;
   deleteRequestId: string | null;
   setDeleteRequestId: (id: string | null) => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  typeFilter: "" | "stockIn" | "stockOut";
+  setTypeFilter: (filter: "" | "stockIn" | "stockOut") => void;
+  order: "desc" | "asc";
+  setOrder: (order: "desc" | "asc") => void;
 }
 
 const RequestContext = createContext<RequestContextType | undefined>(undefined);
@@ -37,6 +43,9 @@ export function RequestContextProvider({
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteRequestId, setDeleteRequestId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"" | "stockIn" | "stockOut">("");
+  const [order, setOrder] = useState<"desc" | "asc">("desc");
 
   useEffect(() => {
     setRequests(initialRequests);
@@ -55,6 +64,12 @@ export function RequestContextProvider({
         setDeleteConfirmOpen,
         deleteRequestId,
         setDeleteRequestId,
+        searchQuery,
+        setSearchQuery,
+        typeFilter,
+        setTypeFilter,
+        order,
+        setOrder,
       }}
     >
       {children}
