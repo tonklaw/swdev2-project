@@ -8,12 +8,15 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import React from "react";
+
+import AuthDialog from "../Auth/AuthDialog";
 
 export default function OptionsMenu() {
   const { status } = useSession();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [openSignInDialog, setOpenSignInDialog] = React.useState(false);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -27,7 +30,11 @@ export default function OptionsMenu() {
       <IconButton
         size="small"
         aria-label="options"
-        onClick={status === "authenticated" ? handleClick : () => signIn()}
+        onClick={
+          status === "authenticated"
+            ? handleClick
+            : () => setOpenSignInDialog(true)
+        }
         sx={{ borderColor: "transparent" }}
       >
         {status === "authenticated" ? (
@@ -65,7 +72,7 @@ export default function OptionsMenu() {
             if (status === "authenticated") {
               signOut();
             } else {
-              signIn();
+              setOpenSignInDialog(true);
             }
             handleClose();
           }}
@@ -82,6 +89,10 @@ export default function OptionsMenu() {
           </ListItemIcon>
         </MenuItem>
       </Menu>
+      <AuthDialog
+        open={openSignInDialog}
+        onClose={() => setOpenSignInDialog(false)}
+      />
     </React.Fragment>
   );
 }

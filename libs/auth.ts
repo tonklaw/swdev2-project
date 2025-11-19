@@ -10,9 +10,9 @@ export async function userRegister(userData: User) {
     body: JSON.stringify(userData),
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to register");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to register");
+  // }
 
   return await response.json();
 }
