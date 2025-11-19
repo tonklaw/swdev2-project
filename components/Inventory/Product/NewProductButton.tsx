@@ -4,9 +4,9 @@ import Button, { ButtonProps } from "@mui/material/Button";
 import { useSession } from "next-auth/react";
 
 export default function NewProductButton(props: ButtonProps) {
-  const { status } = useSession();
+  const { data: session } = useSession();
 
-  if (status !== "authenticated") {
+  if (session?.user?.role !== "admin") {
     return null;
   }
 

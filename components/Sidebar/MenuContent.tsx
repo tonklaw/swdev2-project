@@ -13,14 +13,14 @@ import Stack from "@mui/material/Stack";
 import { usePathname } from "next/navigation";
 
 const mainMenuItems = [
-  { text: "Home", icon: <HomeRoundedIcon />, link: "/" },
+  // { text: "Home", icon: <HomeRoundedIcon />, link: "/" },
   { text: "Inventory", icon: <Inventory2Rounded />, link: "/inventory" },
   { text: "Requests", icon: <AssignmentRoundedIcon />, link: "/requests" },
 ];
 
 const secondaryMenuItems = [
-  { text: "Settings", icon: <SettingsRoundedIcon />, link: "/settings" },
-  { text: "About", icon: <InfoRoundedIcon />, link: "/about" },
+  // { text: "Settings", icon: <SettingsRoundedIcon />, link: "/settings" },
+  // { text: "About", icon: <InfoRoundedIcon />, link: "/about" },
 ];
 
 export default function MenuContent() {
