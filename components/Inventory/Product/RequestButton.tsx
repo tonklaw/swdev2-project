@@ -43,7 +43,7 @@ export default function RequestButton({
       </Typography>
       <IconButton {...props}>
         <Link
-          href={`/request/new?productId=${productId}`}
+          href={`/requests/new?productId=${productId}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <AssignmentReturnRoundedIcon />

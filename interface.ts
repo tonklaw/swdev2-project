@@ -26,5 +26,6 @@ interface Request {
   transactionDate: string;
   transactionType: "stockIn" | "stockOut";
   itemAmount: number;
-  product_id: string;
+  product_id: string | Product;
+  user?: User;
 }

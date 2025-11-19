@@ -10,9 +10,9 @@ export async function getRequests(token: string) {
     },
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch requests");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to fetch requests");
+  // }
   return await response.json();
 }
 
@@ -26,9 +26,9 @@ export async function createRequest(token: string, requestData: Request) {
     body: JSON.stringify(requestData),
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to create request");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to create request");
+  // }
   return await response.json();
 }
 
@@ -41,9 +41,9 @@ export async function getRequestById(token: string, requestId: string) {
     },
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch request");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to fetch request");
+  // }
   return await response.json();
 }
 
@@ -61,9 +61,9 @@ export async function updateRequest(
     body: JSON.stringify(requestData),
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to update request");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to update request");
+  // }
   return await response.json();
 }
 
@@ -72,12 +72,12 @@ export async function deleteRequest(token: string, requestId: string) {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
-      "  Content-Type": "application/json",
+      "Content-Type": "application/json",
     },
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to delete quest");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Failed to delete request");
+  // }
   return await response.json();
 }
