@@ -1,12 +1,10 @@
 "use client";
 
 import CloseIcon from "@mui/icons-material/Close";
-import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import FormControl from "@mui/material/FormControl";
+import Card from "@mui/material/Card";
 import FormHelperText from "@mui/material/FormHelperText";
-import FormLabel from "@mui/material/FormLabel";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Modal from "@mui/material/Modal";
@@ -18,40 +16,12 @@ import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 
 import { useRequestContext } from "@/contexts/RequestContext";
+import { getProductById } from "@/libs/products";
 import { updateRequest } from "@/libs/requests";
 
+import NumberField from "../NumberField";
+
 const STOCK_OUT_LIMIT = 50;
-
-function getValidationError(
-  request: Request | null,
-  formData: Partial<Request>,
-): string | null {
-  if (!request) return null;
-
-  if (
-    formData.transactionType === "stockOut" ||
-    (formData.transactionType === undefined &&
-      request.transactionType === "stockOut")
-  ) {
-    const amount = formData.itemAmount ?? request.itemAmount;
-    const product =
-      typeof request.product_id === "object" ? request.product_id : null;
-
-    if (amount > STOCK_OUT_LIMIT) {
-      return `Stock-out amount cannot exceed ${STOCK_OUT_LIMIT} items`;
-    }
-
-    if (
-      product &&
-      product.stockQuantity !== undefined &&
-      amount > product.stockQuantity
-    ) {
-      return `Stock-out amount cannot exceed available stock of ${product.stockQuantity} items`;
-    }
-  }
-
-  return null;
-}
 
 export default function EditRequestModal() {
   const {
@@ -63,108 +33,101 @@ export default function EditRequestModal() {
     setRequests,
   } = useRequestContext();
   const { data: session } = useSession();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [validationError, setValidationError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Partial<Request>>({});
+
+  const [product, setProduct] = useState<Product | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{
+    [key: string]: string;
+  }>({});
 
   useEffect(() => {
     if (editingRequest) {
-      setFormData({
-        transactionType: editingRequest.transactionType,
-        itemAmount: editingRequest.itemAmount,
-      });
-      setError(null);
-      setValidationError(null);
+      (async () => {
+        const productId = editingRequest.product_id;
+        if (typeof productId === "string") {
+          const { data: product } = await getProductById(productId);
+          setProduct(product);
+        } else if (typeof productId === "object" && productId !== null) {
+          setProduct(productId);
+        }
+      })();
     }
   }, [editingRequest]);
 
-  useEffect(() => {
-    if (editingRequest) {
-      const validError = getValidationError(editingRequest, formData);
-      setValidationError(validError);
-    }
-  }, [formData, editingRequest]);
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFieldErrors({});
+    setSubmitting(true);
 
-  const handleSave = async () => {
-    if (!editingRequest || !session?.user) {
-      setError("No session found");
+    if (!editingRequest) {
+      setSubmitting(false);
       return;
     }
 
-    if (validationError) {
-      setError(validationError);
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const transactionType = formData.get("transactionType") as
+      | "stockIn"
+      | "stockOut";
+    const itemAmount = Number(formData.get("itemAmount"));
+
+    if (!itemAmount || itemAmount <= 0) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        itemAmount: "Item amount must be greater than 0.",
+      }));
+      setSubmitting(false);
       return;
     }
 
-    setLoading(true);
-    setError(null);
-    try {
-      const userObj = session.user as Record<string, unknown> | undefined;
-      const candidate = userObj
-        ? (userObj["token"] ??
-          userObj["accessToken"] ??
-          userObj["access_token"] ??
-          userObj["jwt"])
-        : undefined;
-      const token =
-        typeof candidate === "string" && candidate.length > 0
-          ? candidate
-          : undefined;
-
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
-      const response = await updateRequest(token, editingRequest.id, formData);
-
-      const updatedRequest = response.data || response;
-      const updatedRequests = requests.map((req) =>
-        req.id === editingRequest.id ? { ...req, ...updatedRequest } : req,
-      );
-      setRequests(updatedRequests);
-
-      setEditModalOpen(false);
-      setEditingRequest(null);
-    } catch (err) {
-      const errorMsg =
-        err instanceof Error ? err.message : "Failed to update request";
-      setError(errorMsg);
-      console.error("Update request error:", err);
-    } finally {
-      setLoading(false);
+    if (
+      product &&
+      itemAmount > product.stockQuantity &&
+      transactionType === "stockOut"
+    ) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        itemAmount: `Item amount exceeds current stock quantity (${product.stockQuantity}).`,
+      }));
+      setSubmitting(false);
+      return;
     }
+
+    if (itemAmount > STOCK_OUT_LIMIT && transactionType === "stockOut") {
+      setFieldErrors((prev) => ({
+        ...prev,
+        itemAmount: `Item amount cannot exceed ${STOCK_OUT_LIMIT} items. `,
+      }));
+      setSubmitting(false);
+      return;
+    }
+
+    await updateRequest(session?.user!.token as string, editingRequest.id, {
+      ...editingRequest,
+      transactionType,
+      itemAmount,
+    } as Request);
+
+    const updatedRequests = requests.map((req) =>
+      req.id === editingRequest.id
+        ? { ...req, transactionType, itemAmount }
+        : req,
+    );
+
+    setRequests(updatedRequests);
+    setSubmitting(false);
+    setEditModalOpen(false);
+    setEditingRequest(null);
   };
 
   const handleClose = () => {
     setEditModalOpen(false);
     setEditingRequest(null);
-    setError(null);
-    setValidationError(null);
+    setFieldErrors({});
   };
-
-  const stockQuantity =
-    typeof editingRequest?.product_id === "object"
-      ? editingRequest.product_id?.stockQuantity
-      : undefined;
 
   return (
     <Modal open={editModalOpen} onClose={handleClose}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: { xs: "90%", sm: 500 },
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          borderRadius: 2,
-          p: 3,
-          maxHeight: "90vh",
-          overflow: "auto",
-        }}
-      >
+      <Card sx={{ maxWidth: 500, mx: "auto", mt: 4 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
           <Typography
             component="h2"
@@ -183,111 +146,68 @@ export default function EditRequestModal() {
             <CloseIcon />
           </IconButton>
         </Box>
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
-
-        <Stack spacing={2} sx={{ my: 2 }}>
-          <FormControl fullWidth>
-            <FormLabel
-              sx={{ fontSize: "0.875rem", mb: 0.5, color: "text.primary" }}
-            >
-              Request ID
-            </FormLabel>
+        <form onSubmit={handleSave}>
+          <Stack spacing={2}>
             <TextField
-              value={editingRequest?.id || ""}
+              size="small"
+              label="Product ID"
+              variant="filled"
+              value={product?.id || ""}
               disabled
-              size="small"
-              InputProps={{
-                readOnly: true,
-              }}
+              fullWidth
             />
-          </FormControl>
-
-          <FormControl fullWidth>
-            <FormLabel
-              sx={{ fontSize: "0.875rem", mb: 0.5, color: "text.primary" }}
-            >
-              Transaction Type
-            </FormLabel>
-            <Select
-              value={formData.transactionType || "stockIn"}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  transactionType: e.target.value as "stockIn" | "stockOut",
-                })
-              }
+            <TextField
               size="small"
+              label="Product Name"
+              variant="filled"
+              value={product?.name || ""}
+              disabled
+              fullWidth
+            />
+            <TextField
+              size="small"
+              label="Current Stock"
+              variant="filled"
+              value={product?.stockQuantity || 0}
+              disabled
+              fullWidth
+            />
+            <Select
+              size="small"
+              error={!!fieldErrors.transactionType}
+              label="Transaction Type"
+              name="transactionType"
+              defaultValue={editingRequest?.transactionType || "stockIn"}
+              fullWidth
             >
               <MenuItem value="stockIn">Stock In</MenuItem>
               <MenuItem value="stockOut">Stock Out</MenuItem>
             </Select>
-          </FormControl>
-
-          <FormControl fullWidth error={validationError !== null}>
-            <FormLabel
-              sx={{ fontSize: "0.875rem", mb: 0.5, color: "text.primary" }}
-            >
-              Item Amount
-            </FormLabel>
-            <TextField
-              type="number"
-              value={formData.itemAmount || 0}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  itemAmount: parseInt(e.target.value) || 0,
-                })
-              }
+            <NumberField
+              min={1}
               size="small"
-              inputProps={{
-                min: 0,
-                step: 1,
-              }}
-              error={validationError !== null}
+              name="itemAmount"
+              label="Item Amount"
+              defaultValue={editingRequest?.itemAmount || 1}
+              fullWidth
+              error={!!fieldErrors.itemAmount}
             />
-            {(formData.transactionType === "stockOut" ||
-              (formData.transactionType === undefined &&
-                editingRequest?.transactionType === "stockOut")) && (
-              <FormHelperText>
-                {stockQuantity !== undefined
-                  ? `Available stock: ${stockQuantity} items`
-                  : "Stock quantity: N/A"}
-              </FormHelperText>
-            )}
-            {validationError && (
-              <FormHelperText error>{validationError}</FormHelperText>
-            )}
-          </FormControl>
-        </Stack>
-
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{ justifyContent: "flex-end", mt: 3 }}
-        >
-          <Button
-            variant="outlined"
-            onClick={handleClose}
-            disabled={loading}
-            sx={{ textTransform: "none" }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleSave}
-            disabled={loading || validationError !== null}
-            sx={{ textTransform: "none" }}
-          >
-            {loading ? "Saving..." : "Save"}
-          </Button>
-        </Stack>
-      </Box>
+            <FormHelperText error={!!fieldErrors.itemAmount} sx={{ mt: 0 }}>
+              {fieldErrors.itemAmount}
+            </FormHelperText>
+            <Button
+              size="small"
+              type="submit"
+              disabled={submitting}
+              variant="outlined"
+              color="primary"
+              fullWidth
+            >
+              {submitting ? "Submitting..." : "Create Request"}
+            </Button>
+          </Stack>
+        </form>
+      </Card>
     </Modal>
   );
 }
