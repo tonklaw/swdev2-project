@@ -54,7 +54,7 @@ export default function RequestsContainer() {
   return (
     <RequestContextProvider initialRequests={requests}>
       <OrderTable />
-      <OrderList requests={requests} />
+      <OrderList />
       <EditRequestModal />
       <DeleteRequestModal />
     </RequestContextProvider>
