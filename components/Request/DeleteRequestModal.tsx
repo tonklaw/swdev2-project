@@ -38,18 +38,7 @@ export default function DeleteRequestModal() {
     setLoading(true);
     setError(null);
     try {
-      const userObj = session?.user as Record<string, unknown> | undefined;
-      const candidate = userObj
-        ? (userObj["token"] ??
-          userObj["accessToken"] ??
-          userObj["access_token"] ??
-          userObj["jwt"])
-        : undefined;
-      const token =
-        typeof candidate === "string" && candidate.length > 0
-          ? candidate
-          : undefined;
-
+      const token = session.user.token;
       if (!token) {
         throw new Error("No authentication token found");
       }

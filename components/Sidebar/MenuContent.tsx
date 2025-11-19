@@ -1,9 +1,9 @@
 "use client";
 import AssignmentRoundedIcon from "@mui/icons-material/AssignmentRounded";
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+// import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+// import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import Inventory2Rounded from "@mui/icons-material/Inventory2Rounded";
-import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+// import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -18,7 +18,11 @@ const mainMenuItems = [
   { text: "Requests", icon: <AssignmentRoundedIcon />, link: "/requests" },
 ];
 
-const secondaryMenuItems = [
+const secondaryMenuItems: {
+  text: string;
+  icon: React.ReactNode;
+  link: string;
+}[] = [
   // { text: "Settings", icon: <SettingsRoundedIcon />, link: "/settings" },
   // { text: "About", icon: <InfoRoundedIcon />, link: "/about" },
 ];

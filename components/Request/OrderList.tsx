@@ -6,15 +6,13 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Link from "@mui/material/Link";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
@@ -108,21 +106,66 @@ function getStatusLabel(status: string): string {
   return status === "stockIn" ? "Stock In" : "Stock Out";
 }
 
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
-
 export default function OrderList() {
+  const { typeFilter, searchQuery, order } = useRequestContext();
   const { requests = [] } = useRequestContext();
 
+  function formatDate(dateStr?: string) {
+    if (!dateStr) return "";
+    try {
+      return new Date(dateStr).toLocaleString("en-GB", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+    } catch {
+      return String(dateStr);
+    }
+  }
+
+  const getProductName = (product_id: Request["product_id"]): string => {
+    if (typeof product_id === "object" && product_id !== null) {
+      return product_id.name ?? product_id.id ?? String(product_id);
+    }
+    return String(product_id ?? "");
+  };
+
+  const filteredAndSortedRequests = React.useMemo(() => {
+    let filtered = [...requests];
+
+    if (typeFilter) {
+      filtered = filtered.filter(
+        (request) => request.transactionType === typeFilter,
+      );
+    }
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter((request) => {
+        const productName = getProductName(request.product_id).toLowerCase();
+        const productId =
+          typeof request.product_id === "object"
+            ? String(request.product_id?.id ?? "").toLowerCase()
+            : String(request.product_id).toLowerCase();
+        return productName.includes(query) || productId.includes(query);
+      });
+    }
+
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.transactionDate || 0).getTime();
+      const dateB = new Date(b.transactionDate || 0).getTime();
+      return order === "desc" ? dateB - dateA : dateA - dateB;
+    });
+
+    return filtered;
+  }, [requests, typeFilter, searchQuery, order]);
+
   return (
-    <Box sx={{ display: { xs: "block", sm: "none" } }}>
-      {requests.length === 0 ? (
+    <Card sx={{ display: { xs: "block", md: "none" } }}>
+      {filteredAndSortedRequests.length === 0 ? (
         <Typography
           variant="body2"
           color="text.secondary"
@@ -133,7 +176,7 @@ export default function OrderList() {
       ) : (
         <>
           <List sx={{ width: "100%", bgcolor: "background.paper", p: 0 }}>
-            {requests.map((request, idx) => (
+            {filteredAndSortedRequests.map((request, idx) => (
               <React.Fragment key={request.id || idx}>
                 <ListItem
                   alignItems="flex-start"
@@ -152,24 +195,6 @@ export default function OrderList() {
                       flex: 1,
                     }}
                   >
-                    <ListItemAvatar>
-                      <Avatar
-                        sx={{
-                          width: 32,
-                          height: 32,
-                          fontSize: "0.875rem",
-                        }}
-                      >
-                        {getInitials(
-                          typeof request.product_id === "object" &&
-                            request.product_id !== null
-                            ? (request.product_id.name ??
-                                request.product_id.id ??
-                                "N/A")
-                            : String(request.product_id ?? "N/A"),
-                        )}
-                      </Avatar>
-                    </ListItemAvatar>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                       <Typography
                         variant="body2"
@@ -188,6 +213,13 @@ export default function OrderList() {
                         sx={{ display: "block", mb: 0.5 }}
                       >
                         ID: {request.id}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ mb: 1 }}
+                      >
+                        Requested by {request.user?.name || "Unknown User"}
                       </Typography>
                       <Box
                         sx={{
@@ -213,24 +245,25 @@ export default function OrderList() {
                           alignItems: "center",
                           gap: 1,
                         }}
-                      >
-                        <Link
-                          component="button"
-                          variant="body2"
-                          underline="hover"
-                        >
-                          Download
-                        </Link>
-                        <RowMenu request={request} />
-                      </Box>
+                      ></Box>
                     </Box>
                   </Box>
-                  <Chip
-                    size="small"
-                    icon={getStatusIcon(request.transactionType)}
-                    label={getStatusLabel(request.transactionType)}
-                    color={getStatusColor(request.transactionType)}
-                  />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-end",
+                      gap: 2,
+                    }}
+                  >
+                    <Chip
+                      size="small"
+                      icon={getStatusIcon(request.transactionType)}
+                      label={getStatusLabel(request.transactionType)}
+                      color={getStatusColor(request.transactionType)}
+                    />
+                    <RowMenu request={request} />
+                  </Box>
                 </ListItem>
                 {idx < requests.length - 1 && <Divider component="li" />}
               </React.Fragment>
@@ -268,16 +301,6 @@ export default function OrderList() {
           </Box>
         </>
       )}
-    </Box>
+    </Card>
   );
-}
-
-function formatDate(dateStr?: string) {
-  if (!dateStr) return "";
-  try {
-    return new Date(dateStr).toLocaleDateString("en-GB");
-  } catch (e) {
-    console.error("Date formatting error:", e);
-    return String(dateStr);
-  }
 }

@@ -6,9 +6,9 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import SearchIcon from "@mui/icons-material/Search";
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
@@ -21,6 +21,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Modal from "@mui/material/Modal";
 import Paper from "@mui/material/Paper";
 import Select from "@mui/material/Select";
+import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -32,30 +33,6 @@ import Typography from "@mui/material/Typography";
 import * as React from "react";
 
 import { useRequestContext } from "@/contexts/RequestContext";
-
-// function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-//   if (b[orderBy] < a[orderBy]) {
-//     return -1;
-//   }
-//   if (b[orderBy] > a[orderBy]) {
-//     return 1;
-//   }
-//   return 0;
-// }
-
-type Order = "asc" | "desc";
-
-// function getComparator<Key extends PropertyKey>(
-//   order: Order,
-//   orderBy: Key,
-// ): (
-//   a: Record<Key, number | string>,
-//   b: Record<Key, number | string>,
-// ) => number {
-//   return order === "desc"
-//     ? (a, b) => descendingComparator(a, b, orderBy as keyof typeof a)
-//     : (a, b) => -descendingComparator(a, b, orderBy as keyof typeof a);
-// }
 
 interface RowMenuProps {
   request: Request;
@@ -116,57 +93,34 @@ function RowMenu({ request }: RowMenuProps) {
 }
 
 export default function OrderTable() {
-  const { requests = [] } = useRequestContext();
-  const [order, setOrder] = React.useState<Order>("desc");
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const {
+    requests = [],
+    searchQuery,
+    setSearchQuery,
+    typeFilter,
+    setTypeFilter,
+    order,
+    setOrder,
+  } = useRequestContext();
   const [open, setOpen] = React.useState(false);
 
   const renderFilters = () => (
     <React.Fragment>
       <FormControl size="small" sx={{ minWidth: 160 }}>
-        <FormLabel sx={{ fontSize: "0.75rem", mb: 0.5 }}>Status</FormLabel>
+        <FormLabel sx={{ fontSize: "0.75rem", mb: 0.5 }}>Type</FormLabel>
         <Select
           size="small"
+          value={typeFilter}
+          onChange={(e) =>
+            setTypeFilter(e.target.value as "" | "stockIn" | "stockOut")
+          }
           displayEmpty
           defaultValue=""
           sx={{ fontSize: "0.875rem" }}
         >
-          <MenuItem value="">Filter by status</MenuItem>
-          <MenuItem value="paid">Paid</MenuItem>
-          <MenuItem value="pending">Pending</MenuItem>
-          <MenuItem value="refunded">Refunded</MenuItem>
-          <MenuItem value="cancelled">Cancelled</MenuItem>
-        </Select>
-      </FormControl>
-      <FormControl size="small" sx={{ minWidth: 160 }}>
-        <FormLabel sx={{ fontSize: "0.75rem", mb: 0.5 }}>Category</FormLabel>
-        <Select
-          size="small"
-          displayEmpty
-          defaultValue="all"
-          sx={{ fontSize: "0.875rem" }}
-        >
-          <MenuItem value="all">All</MenuItem>
-          <MenuItem value="refund">Refund</MenuItem>
-          <MenuItem value="purchase">Purchase</MenuItem>
-          <MenuItem value="debit">Debit</MenuItem>
-        </Select>
-      </FormControl>
-      <FormControl size="small" sx={{ minWidth: 160 }}>
-        <FormLabel sx={{ fontSize: "0.75rem", mb: 0.5 }}>Customer</FormLabel>
-        <Select
-          size="small"
-          displayEmpty
-          defaultValue="all"
-          sx={{ fontSize: "0.875rem" }}
-        >
-          <MenuItem value="all">All</MenuItem>
-          <MenuItem value="olivia">Olivia Rhye</MenuItem>
-          <MenuItem value="steve">Steve Hampton</MenuItem>
-          <MenuItem value="ciaran">Ciaran Murray</MenuItem>
-          <MenuItem value="marina">Marina Macdonald</MenuItem>
-          <MenuItem value="charles">Charles Fulton</MenuItem>
-          <MenuItem value="jay">Jay Hoper</MenuItem>
+          <MenuItem value="">Filter by type</MenuItem>
+          <MenuItem value="stockIn">Stock In</MenuItem>
+          <MenuItem value="stockOut">Stock Out</MenuItem>
         </Select>
       </FormControl>
     </React.Fragment>
@@ -175,31 +129,79 @@ export default function OrderTable() {
   function formatDate(dateStr?: string) {
     if (!dateStr) return "";
     try {
-      return new Date(dateStr).toLocaleDateString("en-GB");
+      return new Date(dateStr).toLocaleString("en-GB", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
     } catch {
       return String(dateStr);
     }
   }
+
+  const getProductName = (product_id: Request["product_id"]): string => {
+    if (typeof product_id === "object" && product_id !== null) {
+      return product_id.name ?? product_id.id ?? String(product_id);
+    }
+    return String(product_id ?? "");
+  };
+
+  const filteredAndSortedRequests = React.useMemo(() => {
+    let filtered = [...requests];
+
+    if (typeFilter) {
+      filtered = filtered.filter(
+        (request) => request.transactionType === typeFilter,
+      );
+    }
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter((request) => {
+        const productName = getProductName(request.product_id).toLowerCase();
+        const productId =
+          typeof request.product_id === "object"
+            ? String(request.product_id?.id ?? "").toLowerCase()
+            : String(request.product_id).toLowerCase();
+        return productName.includes(query) || productId.includes(query);
+      });
+    }
+
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.transactionDate || 0).getTime();
+      const dateB = new Date(b.transactionDate || 0).getTime();
+      return order === "desc" ? dateB - dateA : dateA - dateB;
+    });
+
+    return filtered;
+  }, [requests, typeFilter, searchQuery, order]);
 
   return (
     <React.Fragment>
       {/* Mobile Search and Filter */}
       <Box
         sx={{
-          display: { xs: "flex", sm: "none" },
+          display: { xs: "flex", md: "none" },
           my: 1,
           gap: 1,
         }}
       >
         <TextField
           size="small"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            },
           }}
           sx={{ flexGrow: 1 }}
         />
@@ -254,24 +256,28 @@ export default function OrderTable() {
         sx={{
           borderRadius: 1,
           py: 2,
-          display: { xs: "none", sm: "flex" },
+          display: { xs: "none", md: "flex" },
           flexWrap: "wrap",
           gap: 1.5,
         }}
       >
         <FormControl sx={{ flex: 1, minWidth: 160 }} size="small">
           <FormLabel sx={{ fontSize: "0.75rem", mb: 0.5 }}>
-            Search for order
+            Search for Product
           </FormLabel>
           <TextField
             size="small"
             placeholder="Search"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              },
             }}
           />
         </FormControl>
@@ -283,7 +289,7 @@ export default function OrderTable() {
         component={Paper}
         variant="outlined"
         sx={{
-          display: { xs: "none", sm: "block" },
+          display: { xs: "none", md: "block" },
           width: "100%",
           borderRadius: 1,
           flexShrink: 1,
@@ -294,23 +300,7 @@ export default function OrderTable() {
         <Table stickyHeader size="small">
           <TableHead>
             <TableRow>
-              <TableCell padding="checkbox" sx={{ width: 48 }}>
-                <Checkbox
-                  size="small"
-                  indeterminate={
-                    selected.length > 0 && selected.length !== requests.length
-                  }
-                  checked={
-                    selected.length === requests.length && requests.length > 0
-                  }
-                  onChange={(event) => {
-                    setSelected(
-                      event.target.checked ? requests.map((req) => req.id) : [],
-                    );
-                  }}
-                />
-              </TableCell>
-              <TableCell sx={{ width: 120 }}>
+              <TableCell sx={{ flex: 1, minWidth: 100 }}>
                 <Link
                   component="button"
                   underline="none"
@@ -322,7 +312,7 @@ export default function OrderTable() {
                     fontWeight: 600,
                   }}
                 >
-                  Request ID
+                  Date
                   <ArrowDropDownIcon
                     sx={{
                       transition: "0.2s",
@@ -332,41 +322,27 @@ export default function OrderTable() {
                   />
                 </Link>
               </TableCell>
-              <TableCell sx={{ width: 140 }}>Date</TableCell>
-              <TableCell sx={{ width: 140 }}>Type</TableCell>
-              <TableCell sx={{ width: 240 }}>Product ID</TableCell>
-              <TableCell sx={{ width: 140 }}>Amount</TableCell>
-              <TableCell sx={{ width: 140 }}> </TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell sx={{ flex: 3 }}>Product Name</TableCell>
+              <TableCell sx={{ flex: 1 }}>Amount</TableCell>
+              <TableCell sx={{ flex: 1 }}>Requester</TableCell>
+              <TableCell sx={{ flex: 0.5 }}> </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {requests.length === 0 ? (
+            {filteredAndSortedRequests.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
+                <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
                   <Typography variant="body2" color="text.secondary">
-                    No requests found
+                    {searchQuery || typeFilter
+                      ? "No requests match your filters"
+                      : "No requests found"}
                   </Typography>
                 </TableCell>
               </TableRow>
             ) : (
-              requests.map((request) => (
+              filteredAndSortedRequests.map((request) => (
                 <TableRow key={request.id} hover>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      size="small"
-                      checked={selected.includes(request.id)}
-                      onChange={(event) => {
-                        setSelected((ids) =>
-                          event.target.checked
-                            ? ids.concat(request.id)
-                            : ids.filter((itemId) => itemId !== request.id),
-                        );
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">{request.id}</Typography>
-                  </TableCell>
                   <TableCell>
                     <Typography variant="body2">
                       {formatDate(request.transactionDate)}
@@ -396,12 +372,7 @@ export default function OrderTable() {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {typeof request.product_id === "object" &&
-                      request.product_id !== null
-                        ? (request.product_id.name ??
-                          request.product_id.id ??
-                          String(request.product_id))
-                        : String(request.product_id ?? "")}
+                      {getProductName(request.product_id)}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -410,10 +381,40 @@ export default function OrderTable() {
                     </Typography>
                   </TableCell>
                   <TableCell>
+                    <Stack
+                      direction="row"
+                      sx={{
+                        gap: 1,
+                      }}
+                    >
+                      <Avatar
+                        alt={request.user?.name || "User Avatar"}
+                        sx={{ width: 36, height: 36 }}
+                      >
+                        {request.user?.name?.charAt(0).toUpperCase()}
+                      </Avatar>
+                      <Box sx={{ mr: "auto" }}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {request.user?.name}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{ color: "text.secondary" }}
+                        >
+                          {request.user?.email}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </TableCell>
+                  <TableCell>
                     <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                      <Link component="button" variant="body2">
-                        Download
-                      </Link>
                       <RowMenu request={request} />
                     </Box>
                   </TableCell>
