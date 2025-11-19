@@ -3,30 +3,22 @@
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import FormControl from "@mui/material/FormControl";
+import Card from "@mui/material/Card";
 import FormHelperText from "@mui/material/FormHelperText";
-import FormLabel from "@mui/material/FormLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
+import { getProductById } from "@/libs/products";
 import { createRequest } from "@/libs/requests";
 
-const STOCK_OUT_LIMIT = 50;
+import NumberField from "../NumberField";
 
-// Create a theme (replace SyncColorScheme with your theme configuration)
-const theme = createTheme({
-  palette: {
-    mode: "light", // or 'dark', or use system preference
-  },
-});
+const STOCK_OUT_LIMIT = 50;
 
 export default function NewRequestForm() {
   const { data: session } = useSession();
@@ -35,189 +27,148 @@ export default function NewRequestForm() {
   const productId = searchParams.get("productId") || "";
 
   const [product, setProduct] = useState<Product | null>(null);
-  const [transactionType, setTransactionType] = useState<
-    "stockIn" | "stockOut"
-  >("stockIn");
-  const [itemAmount, setItemAmount] = useState<number>(0);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [fieldErrors, setFieldErrors] = useState<{
+    [key: string]: string;
+  }>({});
 
   useEffect(() => {
-    async function fetchProduct() {
-      if (!productId) return;
-      try {
-        const API_BASE =
-          process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
-        const res = await fetch(`${API_BASE}/products/${productId}`);
-        if (res.ok) {
-          const data = await res.json();
-          const p = (data && (data.data ?? data)) as Product | null;
-          if (p) {
-            if (
-              p.stockQuantity !== undefined &&
-              typeof p.stockQuantity === "string"
-            ) {
-              const n = Number(p.stockQuantity);
-              p.stockQuantity = Number.isFinite(n) ? n : 0;
-            }
-            setProduct(p as Product);
-          }
-        }
-      } catch {}
-    }
-    fetchProduct();
-  }, [productId]);
+    (async () => {
+      const { data: product } = await getProductById(productId);
+      setProduct(product);
+    })();
+  }, []);
 
-  const validate = (amount = itemAmount, txnType = transactionType) => {
-    if (!productId) return "Product ID is required.";
-    if (!txnType) return "Transaction type is required.";
-    if (!amount || amount <= 0) return "Item amount must be greater than 0.";
-    if (txnType === "stockOut") {
-      if (amount > STOCK_OUT_LIMIT)
-        return `Stock-out amount cannot exceed ${STOCK_OUT_LIMIT} items.`;
-      if (
-        product &&
-        product.stockQuantity !== undefined &&
-        amount > product.stockQuantity
-      ) {
-        return `Stock-out amount cannot exceed available stock (${product.stockQuantity} items).`;
-      }
-    }
-    return null;
-  };
-
-  useEffect(() => {
-    const validationError = validate(itemAmount, transactionType);
-    setError(validationError);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemAmount, transactionType, product]);
-
-  const user = session?.user as User | undefined;
-  if (!user || user.role !== "staff") {
-    return (
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Box sx={{ maxWidth: 500, mx: "auto", mt: 4 }}>
-          <Typography variant="h4" sx={{ mb: 2 }}>
-            Create New Request
-          </Typography>
-          {!user ? (
-            <Alert severity="error">
-              You must be logged in to create a request.
-            </Alert>
-          ) : (
-            <Alert severity="warning">Only staff can create requests.</Alert>
-          )}
-        </Box>
-      </ThemeProvider>
-    );
-  }
-
-  type AuthUser = {
-    token?: string;
-    accessToken?: string;
-    access_token?: string;
-    jwt?: string;
-  } & User;
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmitNew = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSuccess(false);
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
+    setFieldErrors({});
+    setSubmitting(true);
+
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const transactionType = formData.get("transactionType") as
+      | "stockIn"
+      | "stockOut";
+    const itemAmount = Number(formData.get("itemAmount"));
+
+    if (!itemAmount || itemAmount <= 0) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        itemAmount: "Item amount must be greater than 0.",
+      }));
+      setSubmitting(false);
       return;
     }
-    setLoading(true);
-    try {
-      const u = user as AuthUser;
-      const token = u.token || u.accessToken || u.access_token || u.jwt;
 
-      const requestData = {
+    if (itemAmount > STOCK_OUT_LIMIT && transactionType === "stockOut") {
+      setFieldErrors((prev) => ({
+        ...prev,
+        itemAmount: `Stock-out amount cannot exceed ${STOCK_OUT_LIMIT} items.`,
+      }));
+      setSubmitting(false);
+      return;
+    }
+
+    await createRequest(
+      session?.user!.token as string,
+      {
         id: "",
         transactionDate: new Date().toISOString(),
         transactionType,
         itemAmount,
         product_id: productId,
-      } as Request;
-      if (!token) {
-        throw new Error("No token found");
-      }
-      await createRequest(token, requestData);
-      setSuccess(true);
-      setItemAmount(0);
-      setTransactionType("stockIn");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create request");
-    } finally {
-      setLoading(false);
-    }
+      } as Request,
+    );
+
+    setSuccess(true);
+    setTimeout(() => setSubmitting(false), 500);
+    setTimeout(() => setSuccess(false), 3000);
   };
 
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+  if (!productId) {
+    return (
       <Box sx={{ maxWidth: 500, mx: "auto", mt: 4 }}>
-        <Typography variant="h4" sx={{ mb: 2 }}>
-          Create New Request
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <Stack spacing={2}>
-            <FormControl fullWidth>
-              <FormLabel>Product ID</FormLabel>
-              <TextField value={productId} disabled fullWidth />
-              {product && (
-                <FormHelperText>
-                  {product.name} (Stock: {product.stockQuantity})
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl fullWidth>
-              <FormLabel>Transaction Type</FormLabel>
-              <Select
-                value={transactionType}
-                onChange={(e) =>
-                  setTransactionType(e.target.value as "stockIn" | "stockOut")
-                }
-                fullWidth
-              >
-                <MenuItem value="stockIn">Stock In</MenuItem>
-                <MenuItem value="stockOut">Stock Out</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl fullWidth error={!!error}>
-              <FormLabel>Item Amount</FormLabel>
-              <TextField
-                type="number"
-                value={itemAmount}
-                onChange={(e) => setItemAmount(Number(e.target.value))}
-                inputProps={{ min: 1, step: 1 }}
-                fullWidth
-                error={!!error}
-              />
-              {transactionType === "stockOut" && product && (
-                <FormHelperText>
-                  Available stock: {product.stockQuantity}
-                </FormHelperText>
-              )}
-            </FormControl>
-            {error && <Alert severity="error">{error}</Alert>}
-            <Button
-              type="submit"
-              disabled={loading}
-              variant="contained"
-              color="primary"
-              fullWidth
-            >
-              {loading ? "Creating..." : "Create Request"}
-            </Button>
-            {success && (
-              <Alert severity="success">Request created successfully!</Alert>
-            )}
-          </Stack>
-        </form>
+        <Alert severity="warning">
+          Product ID is required to create a request.
+        </Alert>
       </Box>
-    </ThemeProvider>
+    );
+  }
+
+  if (session?.user!.role !== "staff") {
+    return (
+      <Box sx={{ maxWidth: 500, mx: "auto", mt: 4 }}>
+        <Alert severity="warning">Only staff can create requests.</Alert>
+      </Box>
+    );
+  }
+
+  return (
+    <Card sx={{ maxWidth: 500, mx: "auto", mt: 4 }}>
+      <form onSubmit={handleSubmitNew}>
+        <Stack spacing={2}>
+          <TextField
+            size="small"
+            label="Product ID"
+            variant="filled"
+            value={productId}
+            disabled
+            fullWidth
+          />
+          <TextField
+            size="small"
+            label="Product Name"
+            variant="filled"
+            value={product?.name || ""}
+            disabled
+            fullWidth
+          />
+          <TextField
+            size="small"
+            label="Current Stock"
+            variant="filled"
+            value={product?.stockQuantity || 0}
+            disabled
+            fullWidth
+          />
+          <Select
+            size="small"
+            error={!!fieldErrors.transactionType}
+            label="Transaction Type"
+            name="transactionType"
+            defaultValue="stockIn"
+            fullWidth
+          >
+            <MenuItem value="stockIn">Stock In</MenuItem>
+            <MenuItem value="stockOut">Stock Out</MenuItem>
+          </Select>
+          <NumberField
+            min={1}
+            size="small"
+            name="itemAmount"
+            label="Item Amount"
+            fullWidth
+            error={!!fieldErrors.itemAmount}
+          />
+          <FormHelperText error={!!fieldErrors.itemAmount} sx={{ mt: 0 }}>
+            {fieldErrors.itemAmount}
+          </FormHelperText>
+          <Button
+            size="small"
+            type="submit"
+            disabled={submitting}
+            variant="outlined"
+            color="primary"
+            fullWidth
+          >
+            {submitting ? "Submitting..." : "Create Request"}
+          </Button>
+          {success && (
+            <Alert severity="success">Request created successfully!</Alert>
+          )}
+        </Stack>
+      </form>
+    </Card>
   );
 }
